@@ -1,0 +1,84 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+.background-image {
+    position: relative;
+    background-image: url('./assets/No_Records.jpg');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    
+  }
+  
+  .background-image::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.7); 
+  }
+  
+  @keyframes runningText {
+    0% {
+      transform: translateX(80%);
+    }
+    100% {
+      transform: translateX(-100%);
+    }
+  }
+  
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+  
+  @keyframes slideIn {
+    from {
+      transform: translateY(-20px);
+      opacity: 0;
+    }
+    to {
+      transform: translateY(0);
+      opacity: 1;
+    }
+  }
+  
+  .slide-in {
+    animation: slideIn 1s ease-out ;
+  }
+
+  
+  .fade-in {
+    animation: fadeIn 1s ease-in;
+  }
+  
+  .button-hover {
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+  }
+  
+  .button-hover:hover {
+    transform: scale(1.05);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  }
+  
+  .animate-running-container {
+    position: relative;
+    overflow: hidden;
+    white-space: nowrap; /* Ensures text does not wrap */
+    width: 100%; /* Adjust width if necessary */
+  }
+  
+  .animate-running {
+    display: inline-block;
+    white-space: nowrap;
+    overflow: hidden;
+    animation: runningText 10s linear infinite;
+  }
+  

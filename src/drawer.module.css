@@ -1,0 +1,12 @@
+.side{
+    display: flex;
+}
+img{
+    padding: 0%;
+    margin-left: 0%;
+    height: 100px;
+    width: 100px;
+}
+.text{
+   margin-top: 10%;
+}

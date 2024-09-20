@@ -1,0 +1,145 @@
+.back{
+    background: url('../../assets/prescript.jpg');
+
+    background-size: 100% 130%;
+    height: max-content;
+}
+.head{
+    color:aqua;
+}
+.dn{
+    padding-top: 5%;
+    padding-left: 5%;
+}
+.tn{
+    padding-left: 5%;
+}
+.space{
+    margin-left: 8px;
+    color: rgb(255, 255, 255);
+}
+.pn{
+    padding-top: 7%;
+    padding-bottom: 2%;
+}
+.s1{
+    padding-left: 0%;
+    color: black;
+}
+
+.space1 {
+    margin-left: 8px;
+    color:rgba(18, 34, 107, 255);
+}
+.spaceh{
+    padding-left: 2%;
+    margin-top: 10px;
+}
+.body{
+    padding-top: 10%;
+    display: flex;
+    justify-content: space-around;
+    align-items: flex-start;
+
+}
+@media (max-width: 768px) {
+    .back {
+        background-size: 100% 80%;
+        background-repeat: no-repeat;
+    }
+        .head {
+            color: aqua;
+            font-size: 17px;
+        }
+    
+        .dn {
+            padding-top: 4%;
+            padding-left: 4%;
+        }
+    
+        .tn {
+            padding-left: 4%;
+        }
+    
+        .space {
+            margin-left: 8px;
+            color: rgb(255, 255, 255);
+            font-size: 17px;
+        }
+        .s1 {
+            text-align: center;
+            padding-top: 15%;
+            padding-left: 30%;
+            color: black;
+            font-size: 15px;
+            }
+    
+        .pn {
+            padding-top: 15%;
+            padding-bottom: 2%;
+        }
+    
+        .space1 {
+            margin-left: 8px;
+            color: rgba(18, 34, 107, 255);
+            font-size: 15px;
+        }
+    
+        .spaceh {
+            padding-left: 2%;
+            margin-top: 10px;
+        }
+        .side{
+            padding-top: 5%;
+        }
+        .body {
+                    padding-top: 10%;
+                    display:contents;
+                    justify-content: space-around;
+                    align-items: flex-start;
+        
+                }
+}
+
+@media (max-width: 480px) {
+    .back {
+        background-size: 1000% 80%;
+    }
+        .head {
+            color: aqua;
+        }
+    
+        .dn {
+            padding-top: 5%;
+            padding-left: 5%;
+        }
+    
+        .tn {
+            padding-left: 5%;
+        }
+    
+        .space {
+            margin-left: 8px;
+            color: rgb(255, 255, 255);
+        }
+    
+        .pn {
+            padding-top: 7%;
+            padding-bottom: 2%;
+        }
+    
+        .space1 {
+            margin-left: 8px;
+            color: rgba(18, 34, 107, 255);
+        }
+    
+        .spaceh {
+            padding-left: 2%;
+            margin-top: 10px;
+        }
+    
+        .body {
+            padding-top: 10%;
+    
+        }
+}

@@ -1,0 +1,20 @@
+.paper-container {
+    padding: 30px;
+    background-color: #f5f5f5;
+  }
+  
+  .paper-section {
+    padding: 21px;
+    background-color: #e0e0e0;
+  }
+  
+  .table-container {
+    background-color: #e0e0e0;
+  }
+  
+  .payment-summary {
+    padding: 20px;
+    text-align: right;
+    background-color: #e0e0e0;
+  }
+  

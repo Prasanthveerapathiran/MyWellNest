@@ -1,0 +1,88 @@
+/* Profile.css */
+
+/* Base styles */
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  background-color: #f7f9fc;
+}
+
+.back {
+  background-color: #fff;
+  border-radius: 15px;
+  padding: 20px;
+}
+
+.header {
+  background: linear-gradient(135deg, #42a5f5 0%, #478ed1 100%);
+  padding: 50px;
+  color: white;
+  border-radius: 15px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.g1 {
+  font-size: 2rem;
+  font-weight: 600;
+  margin-bottom: 20px;
+}
+
+.b1 {
+  background-color: #ffffff;
+  border-radius: 15px;
+  padding: 20px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.bu {
+  color: #42a5f5;
+  border-color: #42a5f5;
+  font-weight: bold;
+  margin-right: 10px;
+}
+
+.message {
+  color: #5c6bc0;
+}
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateX(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+h1 {
+  font-size: 2.5rem;
+  margin-bottom: 20px;
+}
+
+h3 {
+  font-size: 1.75rem;
+  margin-bottom: 20px;
+}
+
+h6 {
+  font-size: 1rem;
+  margin-bottom: 10px;
+}
+
+p {
+  margin: 0;
+  padding: 0;
+}
+
+
