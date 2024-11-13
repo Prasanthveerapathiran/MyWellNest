@@ -174,11 +174,18 @@ const LoginForm: React.FC = () => {
 
           setTimeout(() => {
             if (user.role === 'SUPER_ADMIN') {
-              navigate('/showOneClinic');
+               navigate('/showOneClinic');
+              //navigate('/portal');
+            } else if (user.role === 'Manager') {
+              navigate('/dashboard');
+            } else if (user.role === 'DOCTOR' || user.role === 'ADMIN') {
+              navigate('/dashboard/patients');
             } else {
+              // Default navigation for any other roles
               navigate('/dashboard');
             }
           }, 2000);
+          
         } else {
           // Deny login if status is false
           setAlertState({ type: 'error', message: 'Access denied. You need approval to log in.' });
@@ -191,6 +198,7 @@ const LoginForm: React.FC = () => {
   };
   const handleNavigateToNewPage = () => {
     navigate('/new-page');
+  
   };
 
   return (

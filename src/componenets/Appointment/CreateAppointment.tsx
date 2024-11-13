@@ -45,6 +45,13 @@ const CreateAppointment: React.FC = () => {
   const { accessToken } = useToken();
   const [openDropConfirmDialog, setOpenDropConfirmDialog] = useState<boolean>(false);
   const { doctorId, patientId, clinicId, branchId, patientName, doctorName } = location.state || {};
+  useEffect(() => {
+    if (patientId && doctorId) {
+      // Use the patientId and doctorId to pre-fill or handle in your form
+      console.log("Rescheduling appointment for patientId:", patientId);
+      console.log("With doctorId:", doctorId);
+    }
+  }, [patientId, doctorId]);
 
   const checkForConflicts = (newStartTime: string, newEndTime: string) => {
     const newStart = new Date(newStartTime);

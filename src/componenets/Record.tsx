@@ -5,6 +5,7 @@ import { motion } from 'framer-motion';
 import jsPDF from 'jspdf'; // Import jsPDF
 import { Viewer, Worker } from '@react-pdf-viewer/core'; // Import Viewer for PDF preview
 import '@react-pdf-viewer/core/lib/styles/index.css'; // PDF Viewer styles
+import {  FormControlLabel, Checkbox, FormGroup } from '@mui/material';
 
 import {
   Container,
@@ -367,7 +368,7 @@ const Record: React.FC = () => {
                   />
                 </Grid>
                 <Grid item xs={12} md={2}>
-                  <TextField label="Price" variant="outlined" type="number" fullWidth value={medication.medicationPrice} onChange={(e) => handleMedicationChange(index, 'medicationPrice', e.target.value)} />
+                  <TextField label="Number of Medition" variant="outlined" type="number" fullWidth value={medication.medicationPrice} onChange={(e) => handleMedicationChange(index, 'medicationPrice', e.target.value)} />
                 </Grid>
                 <Grid item xs={12} md={2}>
                   <TextField label="Quantity" type="number" variant="outlined" fullWidth value={medication.quantity} onChange={(e) => handleMedicationChange(index, 'quantity', e.target.value)} />
@@ -396,6 +397,27 @@ const Record: React.FC = () => {
                 </Grid>
               </Grid>
             ))}
+             <Typography variant="h6" gutterBottom style={{ marginTop: '20px' }}>
+              Instructions
+            </Typography>
+            <form>
+  <FormControl component="fieldset">
+    <FormGroup style={{ flexDirection: 'row' }}>
+      <FormControlLabel
+        control={<Checkbox name="morning" color="primary" />}
+        label="Morning"
+      />
+      <FormControlLabel
+        control={<Checkbox name="afternoon" color="primary" />}
+        label="Afternoon"
+      />
+      <FormControlLabel
+        control={<Checkbox name="night" color="primary" />}
+        label="Night"
+      />
+    </FormGroup>
+  </FormControl>
+</form>
 
             <Box mt={2}>
               <Button variant="contained" color="primary" onClick={addMedication}>

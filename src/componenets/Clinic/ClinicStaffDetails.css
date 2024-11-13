@@ -1,0 +1,22 @@
+.clinic-staff-container {
+    padding: 20px;
+    background-color: #f5f5f5;
+    border-radius: 10px;
+  }
+  
+  .table-container {
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  }
+  
+  .staff-row:hover {
+    background-color: #f0f8ff;
+  }
+  
+  .checkbox {
+    color: #1976d2;
+  }
+  
+  .header-title {
+    font-family: 'Roboto', sans-serif;
+  }
+  

@@ -241,8 +241,11 @@ const Appbar: React.FC<AppbarProps> = ({ toggleDrawer }) => {
         >
           <MenuIcon />
         </IconButton>
+        <Typography variant="h5" sx={{ marginLeft: 3 }}>
+           Dhana Clinic Medical Application
+          </Typography>
 
-        <Search ref={searchBoxRef}>
+        {/* <Search ref={searchBoxRef}>
           <SearchIconWrapper>
             <SearchIcon />
           </SearchIconWrapper>
@@ -294,7 +297,7 @@ const Appbar: React.FC<AppbarProps> = ({ toggleDrawer }) => {
 )}
 
           </form>
-        </Search>
+        </Search> */}
         <Box sx={{ flexGrow: 1 }} />
         <IconButton color="inherit" onClick={handleNotificationClick}>
           <Badge badgeContent={notificationCount > 0 ? notificationCount : undefined} color="secondary">

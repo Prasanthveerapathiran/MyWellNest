@@ -1,11 +1,16 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { Container, Paper, TextField, Grid, Button, Box, MenuItem, Typography, Alert, AlertTitle } from '@mui/material';
+import { Container, Paper, TextField, Grid, Button, Box, MenuItem, Typography, Alert, AlertTitle,  Radio,
+  RadioGroup,
+  FormControlLabel,
+  FormControl,
+  FormLabel,} from '@mui/material';
 import { styled } from '@mui/system';
 import { useToken } from '../../api/Token';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
+import RefreshIcon from '@mui/icons-material/Refresh'; // Import the reload icon
 
 type AlertType = 'success' | 'error';
 
@@ -13,7 +18,8 @@ const RootContainer = styled(Container)(({ theme }) => ({
   display: 'flex',
   alignItems: 'center',
   justifyContent: 'center',
-  height: '130vh',
+  height: '180vh',
+  width: '100vw',  // Set full width
   padding: theme.spacing(2),
   position: 'relative',
   overflow: 'hidden',
@@ -32,6 +38,7 @@ const RootContainer = styled(Container)(({ theme }) => ({
   },
 }));
 
+
 const FormContainer = styled(Paper)(({ theme }) => ({
   padding: theme.spacing(4),
   maxWidth: 600,
@@ -42,19 +49,30 @@ const FormContainer = styled(Paper)(({ theme }) => ({
   backgroundColor: '#EDFDFF',
 }));
 
+const generatePatientToken = () => {
+  const randomNumber = Math.floor(100000 + Math.random() * 900000); // Generate a 6-digit random number
+  return `AB${randomNumber}`; // Prepend 'AB' to the number
+};
+
 const PatientForm: React.FC = () => {
   const [patients, setPatients] = useState<any[]>([]);
   const [name, setName] = useState('');
   const [age, setAge] = useState('');
-  const [patientToken, setPatientToken] = useState('');
   const [medicalHistory, setMedicalHistory] = useState('');
   const [bloodGroup, setBloodGroup] = useState('');
   const [phoneNumber, setPhoneNumber] = useState('');
   const [phoneNumberError, setPhoneNumberError] = useState<string | null>(null);
-  const [clinicId, setClinicId] = useState('');
-  const [branchId, setBranchId] = useState('');
+  const [isFirstVisit, setIsFirstVisit] = useState(true); // State for first visit
+  const [doctors, setDoctors] = useState<any[]>([]); // State to store doctors
+  const [selectedDoctorId, setSelectedDoctorId] = useState(''); // Store selected doctor ID
   const [image, setImage] = useState<File | null>(null); // State for the image
+  const [prescription, setPrescription] = useState<File | null>(null); // State for the prescription
   const [alert, setAlert] = useState<{ type: AlertType | null; message: string }>({ type: null, message: '' });
+  const [appointmentDate, setAppointmentDate] = useState(''); // State for the appointment date
+  const [patientToken, setPatientToken] = useState(generatePatientToken()); 
+  // Assuming clinicId and branchId are coming from somewhere, such as props or context
+  const clinicId = '1'; // Replace this with actual value
+  const branchId = '1'; // Replace this with actual value
 
   const { accessToken } = useToken();
   const navigate = useNavigate();
@@ -73,8 +91,23 @@ const PatientForm: React.FC = () => {
       }
     };
 
+    const fetchDoctors = async () => {
+      try {
+        const response = await axios.get('http://localhost:8080/api/v1/users/role/DOCTOR', {
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+          },
+        });
+        setDoctors(response.data); // Store the doctors in state
+      } catch (error) {
+        console.error('Failed to fetch doctors', error);
+      }
+    };
+
     fetchPatients();
+    fetchDoctors(); // Fetch the list of doctors
   }, [accessToken]);
+  
 
   const handlePhoneNumberChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
@@ -89,6 +122,12 @@ const PatientForm: React.FC = () => {
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files.length > 0) {
       setImage(e.target.files[0]);
+    }
+  };
+
+  const handlePrescriptionChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files.length > 0) {
+      setPrescription(e.target.files[0]);
     }
   };
 
@@ -119,10 +158,16 @@ const PatientForm: React.FC = () => {
     formData.append('medicalHistory', medicalHistory);
     formData.append('bloodGroup', bloodGroup);
     formData.append('phoneNumber', phoneNumber);
-    formData.append('clinicId', clinicId);
-    formData.append('branchId', branchId);
+    formData.append('clinicId', clinicId); // Automatically set Clinic ID
+    formData.append('branchId', branchId); // Automatically set Branch ID
+    formData.append('first_visit', JSON.stringify(isFirstVisit));  // Add first visit status
+    formData.append('doctorId', selectedDoctorId); // Add selected doctor ID
+    formData.append('appointmentDate', appointmentDate);
     if (image) {
       formData.append('image', image); // Append image if it exists
+    }
+    if (prescription) {
+      formData.append('prescription', prescription); // Append prescription if it exists
     }
 
     try {
@@ -136,13 +181,13 @@ const PatientForm: React.FC = () => {
         setAlert({ type: 'success', message: 'Patient added successfully!' });
         setName('');
         setAge('');
-        setPatientToken('');
+        setPatientToken(generatePatientToken());
         setMedicalHistory('');
         setBloodGroup('');
         setPhoneNumber('');
-        setClinicId('');
-        setBranchId('');
         setImage(null);
+        setAppointmentDate('');
+        setPrescription(null);
         setTimeout(() => {
           navigate('/dashboard/patients');
         }, 1000);
@@ -153,6 +198,10 @@ const PatientForm: React.FC = () => {
     }
   };
 
+  const handleGenerateNewToken = () => {
+    setPatientToken(generatePatientToken()); // Generate and set a new token
+  };
+
   return (
     <RootContainer>
       <motion.div
@@ -160,17 +209,16 @@ const PatientForm: React.FC = () => {
         animate={{ x: 0 }}
         transition={{ type: 'spring', stiffness: 50, damping: 10 }}
       >
-        
         <FormContainer elevation={3} color='#EDFDFF'>
-        <Button
-  variant="text"
-  color="primary"
-  onClick={() => navigate(-1)}
-  sx={{ top: 16, left: 16 }}
-  startIcon={<ArrowBackIcon />}
->
-  Back
-</Button>
+          <Button
+            variant="text"
+            color="primary"
+            onClick={() => navigate(-1)}
+            sx={{ top: 16, left: 16 }}
+            startIcon={<ArrowBackIcon />}
+          >
+            Back
+          </Button>
           <Grid container alignItems="center" spacing={2}>
             <Grid item>
               <img
@@ -199,8 +247,8 @@ const PatientForm: React.FC = () => {
             </Alert>
           )}
           <form onSubmit={handleSubmit}>
-            <Grid container spacing={2}>
-              <Grid item xs={12} sm={6}>
+            
+              <Grid item xs={12} sm={6} padding={1}>
                 <TextField
                   label="Name"
                   variant="outlined"
@@ -210,7 +258,7 @@ const PatientForm: React.FC = () => {
                   required
                 />
               </Grid>
-              <Grid item xs={12} sm={6}>
+              <Grid item xs={12} sm={6} padding={1}>
                 <TextField
                   label="Age"
                   type="number"
@@ -221,17 +269,27 @@ const PatientForm: React.FC = () => {
                   required
                 />
               </Grid>
-              <Grid item xs={12} sm={6}>
-                <TextField
-                  label="Patient Token"
-                  variant="outlined"
-                  fullWidth
-                  value={patientToken}
-                  onChange={(e) => setPatientToken(e.target.value)}
-                  required
-                />
+              <Grid item xs={12} sm={6} padding={1}>
+                <Grid container spacing={1} alignItems="center">
+                  <Grid item xs>
+                    <TextField
+                      label="Patient Token"
+                      variant="outlined"
+                      fullWidth
+                      value={patientToken} // Automatically generated token
+                      onChange={(e) => setPatientToken(e.target.value)}
+                      required
+                      disabled // Make the field read-only since it's auto-generated
+                    />
+                  </Grid>
+                  <Grid item>
+                    <Button onClick={handleGenerateNewToken} variant="outlined" size="small">
+                      <RefreshIcon />
+                    </Button>
+                  </Grid>
+                </Grid>
               </Grid>
-              <Grid item xs={12} sm={6}>
+              <Grid item xs={12} sm={6} padding={1}>
                 <TextField
                   label="Blood Group"
                   variant="outlined"
@@ -251,13 +309,56 @@ const PatientForm: React.FC = () => {
                   <MenuItem value="O-">O-</MenuItem>
                 </TextField>
               </Grid>
+              <Grid container spacing={2}>
+              {/* Your existing form fields */}
+              <Grid item xs={12}>
+  <FormControl component="fieldset">
+    <FormLabel component="legend">Is this the patient's first visit?</FormLabel>
+    <RadioGroup
+      row
+      value={isFirstVisit ? 'yes' : 'no'}
+      onChange={(e) => setIsFirstVisit(e.target.value === 'yes' ? true : false)}
+    >
+      <FormControlLabel value="yes" control={<Radio />} label="Yes" />
+      <FormControlLabel value="no" control={<Radio />} label="No" />
+    </RadioGroup>
+  </FormControl>
+</Grid>
+
+              <Grid item xs={12} sm={6}>
+                <TextField
+                  label="Select Doctor"
+                  variant="outlined"
+                  select
+                  fullWidth
+                  value={selectedDoctorId}
+                  onChange={(e) => setSelectedDoctorId(e.target.value)}
+                  required
+                >
+                  {doctors.map((doctor) => (
+                    <MenuItem key={doctor.id} value={doctor.id}>
+                      {doctor.firstName} {doctor.lastName} - {doctor.specialization}
+                    </MenuItem>
+                  ))}
+                </TextField>
+              </Grid>
+              <TextField
+              label="Appointment Date"
+              type="datetime-local"
+              variant="outlined"
+              fullWidth
+              value={appointmentDate}
+              onChange={(e) => setAppointmentDate(e.target.value)}
+              margin="normal"
+              required
+            />
               <Grid item xs={12}>
                 <TextField
                   label="Medical History"
                   variant="outlined"
                   fullWidth
                   multiline
-                  rows={3}
+                  rows={4}
                   value={medicalHistory}
                   onChange={(e) => setMedicalHistory(e.target.value)}
                 />
@@ -269,47 +370,31 @@ const PatientForm: React.FC = () => {
                   fullWidth
                   value={phoneNumber}
                   onChange={handlePhoneNumberChange}
-                  required
                   error={!!phoneNumberError}
                   helperText={phoneNumberError}
-                />
-              </Grid>
-              <Grid item xs={12} sm={6}>
-                <TextField
-                  label="ClinicId"
-                  type="number"
-                  variant="outlined"
-                  fullWidth
-                  value={clinicId}
-                  onChange={(e) => setClinicId(e.target.value)}
                   required
                 />
               </Grid>
               <Grid item xs={12} sm={6}>
-                <TextField
-                  label="BranchId"
-                  type="number"
-                  variant="outlined"
-                  fullWidth
-                  value={branchId}
-                  onChange={(e) => setBranchId(e.target.value)}
-                  required
-                />
-              </Grid>
-              <Grid item xs={12}>
-                <Typography variant="body1" gutterBottom>
-                  Upload Patient Image
-                </Typography>
                 <input
-                  accept="image/*"
                   type="file"
+                  accept="image/*"
                   onChange={handleImageChange}
                 />
               </Grid>
+              <Grid item xs={12} sm={6}>
+                <input
+                  type="file"
+                  accept="application/pdf"
+                  onChange={handlePrescriptionChange}
+                />
+              </Grid>
               <Grid item xs={12}>
-                <Button type="submit" variant="contained" color="primary" fullWidth>
-                  Submit
-                </Button>
+                <Box display="flex" justifyContent="flex-end">
+                  <Button type="submit" variant="contained" color="primary">
+                    Submit
+                  </Button>
+                </Box>
               </Grid>
             </Grid>
           </form>

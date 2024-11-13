@@ -1,5 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
+import { IconButton } from '@mui/material';
+import InfoIcon from '@mui/icons-material/Info';
+import EditIcon from '@mui/icons-material/Edit'; 
 import {
   Dialog, DialogTitle, DialogContent, DialogActions, Button, TextField, Typography, Table,
   TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, CircularProgress, Alert,
@@ -47,8 +50,16 @@ const Appointments: React.FC = () => {
   const [isDialogOpen, setIsDialogOpen] = useState<boolean>(false);
   const [searchTerm, setSearchTerm] = useState<string>('');
   const [filteredTokens, setFilteredTokens] = useState<Patient[]>([]);
+ 
+  const [selectedAppointment, setSelectedAppointment] = useState<Appointment | null>(null);
+  const [open, setOpen] = useState(false);
+  const [dateOfVisit, setDateOfVisit] = useState('');
+  const [startTime, setStartTime] = useState('');
+  const [endTime, setEndTime] = useState('');
   const [selectedAppointmentId, setSelectedAppointmentId] = useState<number | null>(null);
+  
   const navigate = useNavigate();
+  const AnimatedPaper = motion(Paper);
 
   const role = localStorage.getItem('role');
   const doctorId = localStorage.getItem('id');
@@ -87,7 +98,38 @@ const Appointments: React.FC = () => {
     fetchAppointments();
     fetchPatients();
   }, [accessToken]);
+  const handleClickRow = (appointment: Appointment) => {
+    if (role === 'ADMIN' && (appointment.status === 'Regular Checkup' || appointment.status === 'Emergency')) {
+      setSelectedAppointment(appointment);
+      setDateOfVisit(appointment.dateOfVisit);
+      setStartTime(appointment.startTime);
+      setEndTime(appointment.endTime);
+      setOpen(true);
+    }
+  };
+  const handleUpdateAppointment = () => {
+    if (selectedAppointment) {
+      const updatedAppointment = {
+        ...selectedAppointment,
+        dateOfVisit,
+        startTime,
+        endTime
+      };
+      axios.put(`http://localhost:8080/api/v1/appointments/updateappointment/${selectedAppointment.id}`, updatedAppointment)
+        .then(() => {
+          // Update local state after successful API update
+          setAppointments(prev =>
+            prev.map(app => (app.id === selectedAppointment.id ? updatedAppointment : app))
+          );
+          setOpen(false);
+        })
+        .catch((error) => console.error(error));
+    }
+  };
 
+  const handleReschedule = (patientId: number, doctorId: number) => {
+    navigate(`/dashboard/create-appointment`, { state: { patientId, doctorId } });
+  };
   const handleOpenDialog = () => {
     setIsDialogOpen(true);
   };
@@ -205,7 +247,7 @@ const Appointments: React.FC = () => {
         )
       );
     } catch (error) {
-  
+      console.error('Failed to approve appointment');
     } finally {
       handleCloseDialog();
     }
@@ -238,38 +280,147 @@ const Appointments: React.FC = () => {
           Appointments
         </Typography>
       </motion.div>
-
       <Grid container spacing={2} marginBottom={3}>
-        <Grid item xs={4}>
-          <Card>
-            <CardContent>
-              <Typography variant="h6" align="center">Today's Appointments</Typography>
-              <Typography variant="h4" align="center">{todayAppointments.length}</Typography>
-            </CardContent>
-          </Card>
-        </Grid>
-        <Grid item xs={4}>
-          <Card>
-            <CardContent>
-              <Typography variant="h6" align="center">Last Month's Appointments</Typography>
-              <Typography variant="h4" align="center">{lastMonthAppointments.length}</Typography>
-            </CardContent>
-          </Card>
-        </Grid>
-        <Grid item xs={4}>
-          <Card>
-            <CardContent>
-              <Typography variant="h6" align="center">This Year's Appointments</Typography>
-              <Typography variant="h4" align="center">{thisYearAppointments.length}</Typography>
-            </CardContent>
-          </Card>
-        </Grid>
-      </Grid>
+  <Grid item xs={12} sm={6} md={4}>
+    <AnimatedPaper
+      elevation={5}
+      whileHover={{ scale: 1.05 }}
+      transition={{ duration: 0.3 }}
+      sx={{
+        p: 3,
+        height: '100%',
+        background: 'linear-gradient(135deg, #1e3c72 0%, #2a5298 100%)',
+        color: '#fff',
+        borderRadius: '15px',
+        display: 'flex',
+        flexDirection: 'column',
+        justifyContent: 'space-between',
+        position: 'relative', // Make the icon positioning easier
+      }}
+    >
+      <Box>
+        <Typography variant="h6" sx={{ fontWeight: 'bold' }}>
+          Today's Appointments
+        </Typography>
+        <Typography variant="h3" sx={{ fontWeight: 'bold', mt: 1 }}>
+          {todayAppointments.length}
+        </Typography>
+      </Box>
 
+      {/* Round Icon Button */}
+      <IconButton
+        sx={{
+          position: 'absolute',
+          top: 10,
+          right: 10,
+          backgroundColor: '#fff',
+          color: '#1e3c72',
+          '&:hover': {
+            backgroundColor: '#ddd',
+          },
+          borderRadius: '50%',
+          padding: 1.5, // Adjust to control size
+        }}
+      >
+        <InfoIcon />
+      </IconButton>
+    </AnimatedPaper>
+  </Grid>
+
+  <Grid item xs={12} sm={6} md={4}>
+    <AnimatedPaper
+      elevation={5}
+      whileHover={{ scale: 1.05 }}
+      transition={{ duration: 0.3 }}
+      sx={{
+        p: 3,
+        height: '100%',
+        background: 'linear-gradient(135deg, #8360c3 0%, #2ebf91 100%)',
+        color: '#fff',
+        borderRadius: '15px',
+        display: 'flex',
+        flexDirection: 'column',
+        justifyContent: 'space-between',
+        position: 'relative',
+      }}
+    >
+      <Box>
+        <Typography variant="h6" sx={{ fontWeight: 'bold' }}>
+          Last Month's Appointments
+        </Typography>
+        <Typography variant="h3" sx={{ fontWeight: 'bold', mt: 1 }}>
+          {lastMonthAppointments.length}
+        </Typography>
+      </Box>
+
+      <IconButton
+        sx={{
+          position: 'absolute',
+          top: 10,
+          right: 10,
+          backgroundColor: '#fff',
+          color: '#8360c3',
+          '&:hover': {
+            backgroundColor: '#ddd',
+          },
+          borderRadius: '50%',
+          padding: 1.5,
+        }}
+      >
+        <InfoIcon />
+      </IconButton>
+    </AnimatedPaper>
+  </Grid>
+
+  <Grid item xs={12} sm={6} md={4}>
+    <AnimatedPaper
+      elevation={5}
+      whileHover={{ scale: 1.05 }}
+      transition={{ duration: 0.3 }}
+      sx={{
+        p: 3,
+        height: '100%',
+        background: 'linear-gradient(135deg, #f12711 0%, #f5af19 100%)',
+        color: '#fff',
+        borderRadius: '15px',
+        display: 'flex',
+        flexDirection: 'column',
+        justifyContent: 'space-between',
+        position: 'relative',
+      }}
+    >
+      <Box>
+        <Typography variant="h6" sx={{ fontWeight: 'bold' }}>
+          This Year's Appointments
+        </Typography>
+        <Typography variant="h3" sx={{ fontWeight: 'bold', mt: 1 }}>
+          {thisYearAppointments.length}
+        </Typography>
+      </Box>
+
+      <IconButton
+        sx={{
+          position: 'absolute',
+          top: 10,
+          right: 10,
+          backgroundColor: '#fff',
+          color: '#f12711',
+          '&:hover': {
+            backgroundColor: '#ddd',
+          },
+          borderRadius: '50%',
+          padding: 1.5,
+        }}
+      >
+        <InfoIcon />
+      </IconButton>
+    </AnimatedPaper>
+  </Grid>
+</Grid>
       <Card>
         <CardContent>
           <Box display="flex" justifyContent="space-between" marginBottom={2}>
-            {role === 'ADMIN' && (
+            {(role === 'ADMIN' || role === 'FRONT_DESK') && (
               <Button variant="contained" color="primary" onClick={handleOpenDialog}>
                 + New Appointment
               </Button>
@@ -354,6 +505,9 @@ const Appointments: React.FC = () => {
                   <TableCell style={{ backgroundColor: '#e0f7fa', fontWeight: 'bold' }}>
                     Description
                   </TableCell>
+                  <TableCell style={{ backgroundColor: '#e0f7fa', fontWeight: 'bold' }}>
+                    Rescedule
+                  </TableCell>
                 </TableRow>
               </TableHead>
               <TableBody>
@@ -363,7 +517,9 @@ const Appointments: React.FC = () => {
                   const endTime = new Date(appointment.endTime);
 
                   return (
-                    <TableRow key={appointment.id}>
+                    <TableRow      key={appointment.id}
+                    onClick={() => handleClickRow(appointment)}
+                    style={{ cursor: role === 'ADMIN' && (appointment.status === 'Regular Checkup' || appointment.status === 'Emergency') ? 'pointer' : 'default' }}>
                       <TableCell>{appointment.patientname}</TableCell>
                       <TableCell>{appointmentDate.toLocaleDateString()}</TableCell>
                       <TableCell>{startTime.toLocaleTimeString()}</TableCell>
@@ -388,12 +544,54 @@ const Appointments: React.FC = () => {
 
 
                       <TableCell>{appointment.descriptions || 'N/A'}</TableCell>
+                      <TableCell>
+              <IconButton
+                color="primary"
+                onClick={() => handleReschedule(appointment.patientId, appointment.doctorId)}
+              >
+                <EditIcon />
+              </IconButton>
+            </TableCell>
                     </TableRow>
                   );
                 })}
               </TableBody>
             </Table>
           </TableContainer>
+          <Dialog open={open} onClose={() => setOpen(false)}>
+        <DialogTitle>Edit Appointment</DialogTitle>
+        <DialogContent>
+          <TextField
+            label="Date of Visit"
+            value={dateOfVisit}
+            onChange={(e) => setDateOfVisit(e.target.value)}
+            fullWidth
+            margin="normal"
+          />
+          <TextField
+            label="Start Time"
+            value={startTime}
+            onChange={(e) => setStartTime(e.target.value)}
+            fullWidth
+            margin="normal"
+          />
+          <TextField
+            label="End Time"
+            value={endTime}
+            onChange={(e) => setEndTime(e.target.value)}
+            fullWidth
+            margin="normal"
+          />
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setOpen(false)} color="secondary">
+            Cancel
+          </Button>
+          <Button onClick={handleUpdateAppointment} color="primary">
+            Save
+          </Button>
+        </DialogActions>
+      </Dialog>
         </CardContent>
       </Card>
     </Box>

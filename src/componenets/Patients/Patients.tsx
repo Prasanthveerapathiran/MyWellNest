@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
+import { Link } from 'react-router-dom';
 import {
   Typography,
   Box,
@@ -37,6 +38,15 @@ import { useNavigate } from 'react-router-dom';
 import { useToken } from '../../api/Token';
 import LongMenu from '../../tools/LongMenu';
 import { motion } from 'framer-motion'; // Import motion
+import SearchIcon from '@mui/icons-material/Search';
+import PeopleIcon from '@mui/icons-material/People';
+import EventIcon from '@mui/icons-material/Event';
+import TimelineIcon from '@mui/icons-material/Timeline';
+interface LongMenuProps {
+  handleViewDetails: (e: React.MouseEvent<HTMLElement>) => void; // Update to accept an event
+  handleEdit: (e: React.MouseEvent<HTMLElement>) => void; // Update to accept an event
+  handleDelete: (e: React.MouseEvent<HTMLElement>) => void; // Update to accept an event
+}
 
 
 interface Patient {
@@ -45,12 +55,13 @@ interface Patient {
   age: number;
   medicalHistory: string;
   bloodGroup: string;
-  phoneNumber: string;
+  phoneNumber: number;
   createdDate: string;
   clinicId: number;
   branchId: number;
   patientToken: string;
   imageUrl: string;
+  appointmentDate: string; 
 }
 const bloodGroups = [
   { value: 'A+', label: 'A+' },
@@ -79,6 +90,8 @@ const Patients: React.FC = () => {
   const [editPatientId, setEditPatientId] = useState<number | null>(null);
   const [editPatientData, setEditPatientData] = useState<Patient | null>(null);
   const [openUpdateDialog, setOpenUpdateDialog] = useState(false);
+  
+const AnimatedPaper = motion(Paper);
   const navigate = useNavigate();
     console.log(clinicId);
     console.log(branchId);
@@ -104,6 +117,7 @@ const Patients: React.FC = () => {
         });
     }
   }, [accessToken]);
+  
 
   const calculateMonthlyAndYearlyPatients = (patients: Patient[]) => {
     // Calculate monthly patients
@@ -131,6 +145,19 @@ const Patients: React.FC = () => {
   const handleMenuClose = () => {
     setAnchorEl(null);
   };
+  const handleSearch = () => {
+    const filteredPatients = patients.filter(patient => 
+      patient.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      patient.phoneNumber.toString().includes(searchTerm) || // Ensure phone number is a string
+      patient.bloodGroup.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      patient.patientToken.toLowerCase().includes(searchTerm.toLowerCase())
+     
+    );
+    setPatients(filteredPatients);
+    // Update your state with filteredPatients or perform other actions
+  };
+  
+  
 
   const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setSearchTerm(event.target.value);
@@ -231,7 +258,8 @@ const Patients: React.FC = () => {
       return (
         patient.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
         patient.bloodGroup.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        (typeof patient.phoneNumber === 'string' && patient.phoneNumber.includes(searchTerm))
+        patient.phoneNumber.toString().includes(searchTerm) 
+       
       );
     }
     return true;
@@ -277,62 +305,188 @@ const Patients: React.FC = () => {
 };
   return (
     <Box sx={{ padding: 1 }}>
-      <Typography variant="h4" gutterBottom>
-        Patients
-      </Typography>
-      <Grid container spacing={2}>
-        <Grid item xs={12} sm={6} md={4}>
-          <Paper elevation={3} sx={{ p: 2, height: '100%' }}>
-        
-            <Typography variant="h6">Total Patients</Typography>
-            <Typography variant="h4">{patients.length}</Typography>
-            <Typography variant="body2">Total patients today</Typography>
-          </Paper>
-        </Grid>
-        <Grid item xs={12} sm={6} md={4}>
-          <Paper elevation={3} sx={{ p: 2, height: '100%' }}>
-            <Typography variant="h6">Monthly Patients</Typography>
-            <Typography variant="h4">{monthlyPatients}</Typography>
-            <Typography variant="body2">Total patients this month</Typography>
-          </Paper>
-        </Grid>
-        <Grid item xs={12} sm={6} md={4}>
-          <Paper elevation={3} sx={{ p: 2, height: '100%' }}>
-            <Typography variant="h6">Yearly Patients</Typography>
-            <Typography variant="h4">{yearlyPatients}</Typography>
-            <Typography variant="body2">Total patients this year</Typography>
-          </Paper>
-        </Grid>
-      </Grid>
-      <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mt: 3 }}>
-      <Box sx={{ mt: 3 }}>
-      <Grid container spacing={2} alignItems="center">
-        <Grid item>
+     <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
+  <Typography variant="h4" gutterBottom>
+    Patients
+  </Typography>
+  
+  {/* <Fab
+    color="primary"
+    aria-label="add"
+    onClick={handleFabClick}
+    sx={{ 
+      position: 'relative', // Relative so it stays in line with the content
+      zIndex: 1000 // Keeps it above other content if needed
+    }}
+    component={motion.div}
+  >
+    <AddIcon />
+  </Fab> */}
+</Box>
+
+      <Grid container spacing={3} sx={{ mt: 2 }}>
+  <Grid item xs={12} sm={6} md={4}>
+    <AnimatedPaper
+      elevation={5}
+      whileHover={{ scale: 1.05 }}
+      transition={{ duration: 0.3 }}
+      sx={{
+        p: 3,
+        height: '100%',
+        background: 'linear-gradient(135deg, #1e3c72 0%, #2a5298 100%)',
+        color: '#fff',
+        borderRadius: '15px',
+        display: 'flex',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+      }}
+    >
+      <Box>
+        <Typography variant="h6" sx={{ fontWeight: 'bold' }}>
+          Total Patients
+        </Typography>
+        <Typography variant="h3" sx={{ fontWeight: 'bold', mt: 1 }}>
+          {patients.length}
+        </Typography>
+        <Typography variant="body2" sx={{ opacity: 0.8, mt: 1 }}>
+          Total patients today
+        </Typography>
+      </Box>
+      <Avatar sx={{ bgcolor: '#fff', color: '#1e3c72', width: 56, height: 56 }}>
+        <PeopleIcon fontSize="large" />
+      </Avatar>
+    </AnimatedPaper>
+  </Grid>
+
+  <Grid item xs={12} sm={6} md={4}>
+    <AnimatedPaper
+      elevation={5}
+      whileHover={{ scale: 1.05 }}
+      transition={{ duration: 0.3 }}
+      sx={{
+        p: 3,
+        height: '100%',
+        background: 'linear-gradient(135deg, #11998e 0%, #38ef7d 100%)',
+        color: '#fff',
+        borderRadius: '15px',
+        display: 'flex',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+      }}
+    >
+      <Box>
+        <Typography variant="h6" sx={{ fontWeight: 'bold' }}>
+          Monthly Patients
+        </Typography>
+        <Typography variant="h3" sx={{ fontWeight: 'bold', mt: 1 }}>
+          {monthlyPatients}
+        </Typography>
+        <Typography variant="body2" sx={{ opacity: 0.8, mt: 1 }}>
+          Total patients this month
+        </Typography>
+      </Box>
+      <Avatar sx={{ bgcolor: '#fff', color: '#11998e', width: 56, height: 56 }}>
+        <EventIcon fontSize="large" />
+      </Avatar>
+    </AnimatedPaper>
+  </Grid>
+
+  <Grid item xs={12} sm={6} md={4}>
+    <AnimatedPaper
+      elevation={5}
+      whileHover={{ scale: 1.05 }}
+      transition={{ duration: 0.3 }}
+      sx={{
+        p: 3,
+        height: '100%',
+        background: 'linear-gradient(135deg, #f7971e 0%, #ffd200 100%)',
+        color: '#fff',
+        borderRadius: '15px',
+        display: 'flex',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+      }}
+    >
+      <Box>
+        <Typography variant="h6" sx={{ fontWeight: 'bold' }}>
+          Yearly Patients
+        </Typography>
+        <Typography variant="h3" sx={{ fontWeight: 'bold', mt: 1 }}>
+          {yearlyPatients}
+        </Typography>
+        <Typography variant="body2" sx={{ opacity: 0.8, mt: 1 }}>
+          Total patients this year
+        </Typography>
+      </Box>
+      <Avatar sx={{ bgcolor: '#fff', color: '#f7971e', width: 56, height: 56 }}>
+        <TimelineIcon fontSize="large" />
+      </Avatar>
+    </AnimatedPaper>
+  </Grid>
+</Grid>
+
+    <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mt: 4 }}>
+      <Grid container spacing={3} alignItems="center">
+      <Grid item>
           <TextField
-            label="Search"
+            label="Search by Name, Phone, Blood Group"
             value={searchTerm}
             onChange={handleSearchChange}
+            
+            variant="outlined"
+            size="small"
+            InputProps={{
+              endAdornment: (
+                <IconButton onClick={handleSearch}>
+                  <SearchIcon />
+                </IconButton>
+              ),
+            }}
+            sx={{
+              width: 400, // Adjusted width for longer search input
+              backgroundColor: '#fff',
+              borderRadius: 1,
+              boxShadow: '0px 3px 6px rgba(0, 0, 0, 0.1)',
+            }}
           />
         </Grid>
+
         <Grid item>
           <TextField
             label="Patient Token"
             value={patientTokenSearchTerm}
             onChange={handlePatientTokenSearchChange}
+            variant="outlined"
+            size="small"
+            sx={{
+              width: 200,
+              backgroundColor: '#fff',
+              borderRadius: 1,
+              boxShadow: '0px 3px 6px rgba(0, 0, 0, 0.1)',
+            }}
           />
         </Grid>
+
         <Grid item>
           <TextField
             label="Sort By"
             value={sortBy}
             onChange={handleSortByChange}
             select
-            sx={{ width: 150 }}
+            variant="outlined"
+            size="small"
+            sx={{
+              width: 150,
+              backgroundColor: '#fff',
+              borderRadius: 1,
+              boxShadow: '0px 3px 6px rgba(0, 0, 0, 0.1)',
+            }}
           >
             <MenuItem value="new">New</MenuItem>
             <MenuItem value="old">Old</MenuItem>
           </TextField>
         </Grid>
+
         <Grid item>
           <TextField
             label="From"
@@ -342,8 +496,17 @@ const Patients: React.FC = () => {
             InputLabelProps={{
               shrink: true,
             }}
+            variant="outlined"
+            size="small"
+            sx={{
+              width: 180,
+              backgroundColor: '#fff',
+              borderRadius: 1,
+              boxShadow: '0px 3px 6px rgba(0, 0, 0, 0.1)',
+            }}
           />
         </Grid>
+
         <Grid item>
           <TextField
             label="To"
@@ -353,80 +516,119 @@ const Patients: React.FC = () => {
             InputLabelProps={{
               shrink: true,
             }}
+            variant="outlined"
+            size="small"
+            sx={{
+              width: 180,
+              backgroundColor: '#fff',
+              borderRadius: 1,
+              boxShadow: '0px 3px 6px rgba(0, 0, 0, 0.1)',
+            }}
           />
         </Grid>
+
         <Grid item>
           <Button
-            variant="outlined"
+            variant="contained"
             color="primary"
             startIcon={<FilterListIcon />}
             onClick={handleFilterClick}
+            sx={{
+              backgroundColor: '#1976d2',
+              borderRadius: 2,
+              padding: '6px 16px',
+              boxShadow: '0px 3px 6px rgba(0, 0, 0, 0.1)',
+              transition: 'background-color 0.3s ease',
+              '&:hover': {
+                backgroundColor: '#1565c0',
+              },
+            }}
           >
             Filter
           </Button>
         </Grid>
       </Grid>
     </Box>
-</Box>
-<motion.div
-        initial={{ opacity: 0, y: 50 }}
-        animate={{ opacity: 1, y: 2 }}
-        transition={{ duration: 1.5 }}
-      >
-
-       <TableContainer component={Paper}  style={{ marginTop: '30px', maxHeight: '350px' }}>
-        <Table stickyHeader>
-          <TableHead>
-            <TableRow>
-              <TableCell style={{ backgroundColor: '#e0f7fa', fontWeight: 'bold' }}>ID</TableCell>
-              <TableCell  style={{ backgroundColor: '#e0f7fa', fontWeight: 'bold' }}>Name</TableCell>
-              <TableCell  style={{ backgroundColor: '#e0f7fa', fontWeight: 'bold' }}>Age</TableCell>
-              <TableCell style={{ backgroundColor: '#e0f7fa', fontWeight: 'bold' }}>Medical History</TableCell>
-              <TableCell  style={{ backgroundColor: '#e0f7fa', fontWeight: 'bold' }}>Blood Group</TableCell>
-              <TableCell  style={{ backgroundColor: '#e0f7fa', fontWeight: 'bold' }}>Phone Number</TableCell>
-              <TableCell  style={{ backgroundColor: '#e0f7fa', fontWeight: 'bold' }}>Created Date</TableCell>
-              <TableCell  style={{ backgroundColor: '#e0f7fa', fontWeight: 'bold' }}>Patient Token</TableCell>
-              <TableCell  style={{ backgroundColor: '#e0f7fa', fontWeight: 'bold' }}align="center">Actions</TableCell>
-            </TableRow>
-          </TableHead>
-          <TableBody>
+    <motion.div
+  initial={{ opacity: 0, y: 50 }}
+  animate={{ opacity: 1, y: 2 }}
+  transition={{ duration: 1.5 }}
+>
+  <TableContainer
+    component={Paper}
+    sx={{
+      mt: 4,
+      maxHeight: '350px',
+      borderRadius: 2,
+      boxShadow: '0 4px 10px rgba(0, 0, 0, 0.1)',
+    }}
+  >
+    <Table stickyHeader>
+      <TableHead>
+        <TableRow>
+          {['ID', 'Name', 'Age', 'Medical History', 'Blood Group', 'Phone Number', 'Appointment Date', 'Patient Token', ].map((header) => (
+            <TableCell
+              key={header}
+              sx={{
+                backgroundColor: '#00796b',
+                color: '#fff',
+                fontWeight: 'bold',
+                textAlign: 'center',
+                borderTopLeftRadius: header === 'ID' ? '10px' : '',
+                borderTopRightRadius: header === 'Actions' ? '10px' : '',
+              }}
+            >
+              {header}
+            </TableCell>
+          ))}
+        </TableRow>
+      </TableHead>
+      <TableBody>
   {filteredPatients.map((patient) => (
-    <TableRow key={patient.id}>
-      <TableCell>{patient.id}</TableCell>
+    <TableRow
+      key={patient.id}
+      sx={{
+        '&:nth-of-type(odd)': { backgroundColor: '#f7f7f7' },
+        '&:hover': { backgroundColor: '#e0f2f1', cursor: 'pointer' },
+      }}
+      component={Link} // Make the TableRow a Link
+      to={`/patient-details/${patient.id}`} // Adjust the path to your patient details route
+    >
+      <TableCell align="center">{patient.id}</TableCell>
       <TableCell>
-  <Box sx={{ display: 'flex', alignItems: 'center' }}>
-    {/* <Avatar
-      alt={patient.name}
-      src={`data:image/jpeg;base64,${patient.imageUrl}`} // Add MIME type prefix to the base64 string
-      sx={{ width: 40, height: 40, ml: 2, marginRight: 2 }}
-    /> */}
-    <Typography variant="body1">{patient.name}</Typography>
-  </Box>
-</TableCell>
-
-
-      <TableCell>{patient.age}</TableCell>
-      <TableCell>{patient.medicalHistory}</TableCell>
-      <TableCell>{patient.bloodGroup}</TableCell>
-      <TableCell>{patient.phoneNumber}</TableCell>
-      <TableCell>{format(new Date(patient.createdDate), 'dd-MM-yyyy')}</TableCell>
-      <TableCell>{patient.patientToken}</TableCell>
-      <TableCell align="center">
-        <LongMenu
-          handleViewDetails={() => handleViewDetails(patient.id)}
-          handleEdit={() => handleEdit(patient)}
-          handleDelete={() => handleDelete(patient.id)}
-        />
+        <Box sx={{ display: 'flex', alignItems: 'center' }}>
+          {/* Uncomment this line to show the avatar */}
+          {/* <Avatar
+            alt={patient.name}
+            src={`data:image/jpeg;base64,${patient.imageUrl}`}
+            sx={{ width: 40, height: 40, ml: 2, marginRight: 2 }}
+          /> */}
+          <Typography variant="body1">{patient.name}</Typography>
+        </Box>
       </TableCell>
+      <TableCell align="center">{patient.age}</TableCell>
+      <TableCell>{patient.medicalHistory}</TableCell>
+      <TableCell align="center">{patient.bloodGroup}</TableCell>
+      <TableCell align="center">{patient.phoneNumber}</TableCell>
+      <TableCell>{format(new Date(patient.appointmentDate), 'yyyy-MM-dd')}</TableCell>
+
+      <TableCell align="center">{patient.patientToken}</TableCell>
+      {/* <TableCell align="center">
+        <LongMenu
+          handleViewDetails={() => handleViewDetails(patient.id)} // No event parameter here
+          handleEdit={() => handleEdit(patient)} // No event parameter here
+          handleDelete={() => handleDelete(patient.id)} // No event parameter here
+        />
+      </TableCell> */}
     </TableRow>
   ))}
 </TableBody>
 
 
-        </Table>
-      </TableContainer>
+    </Table>
+  </TableContainer>
+</motion.div>
 
-      </motion.div>
     
       <Dialog open={openUpdateDialog} onClose={() => setOpenUpdateDialog(false)}>
         <DialogTitle>Edit Patient</DialogTitle>
@@ -508,20 +710,8 @@ const Patients: React.FC = () => {
           
         </DialogActions>
       </Dialog>
-      <Fab
-  color="primary"
-  aria-label="add"
-  onClick={handleFabClick}
-  sx={{ position: 'fixed', bottom: 16, right: 16 }}
-  component={motion.div}
-  variants={jumpAnimation}
-  initial="initial"
-  animate="animate"
-  whileHover="whileHover"
-  whileTap="whileTap"
->
-  <AddIcon />
-</Fab>
+  
+
     </Box>
   );
 };

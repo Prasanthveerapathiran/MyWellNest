@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
+import EditIcon from '@mui/icons-material/Edit';
 import {
   Grid,
   Box,
@@ -18,6 +19,10 @@ import {
   TableRow,
   Paper,
   TextField,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
 } from '@mui/material';
 import { styled } from '@mui/system';
 import { useToken } from '../../api/Token';
@@ -137,6 +142,8 @@ const PatientDetails: React.FC = () => {
   const [selectedRecord, setSelectedRecord] = useState<MedicalRecord | null>(null);
   const [searchQuery, setSearchQuery] = useState(''); // New state for search query
   const [patientImage, setPatientImage] = useState<string | null>(null); // New state for patient image
+  const [openUpdateDialog, setOpenUpdateDialog] = useState(false);
+  const [editPatientDetails, setEditPatientDetails] = useState<Patient | null>(null);
 
   useEffect(() => {
     if (accessToken && id) {
@@ -148,6 +155,9 @@ const PatientDetails: React.FC = () => {
         })
         .then((response) => {
           setPatient(response.data);
+            // Store branchId and clinicId in local storage
+        localStorage.setItem('branchId', response.data.branchId.toString());
+        localStorage.setItem('clinicId', response.data.clinicId.toString());
         })
         .catch((error) => {
           console.error('Error fetching patient details:', error);
@@ -195,6 +205,35 @@ const PatientDetails: React.FC = () => {
       console.error('Error fetching medical record details:', error);
     }
   };
+  const handleOpenUpdateDialog = () => {
+    if (patient) {
+      setEditPatientDetails({ ...patient });
+    }
+    setOpenUpdateDialog(true);
+  };
+  
+
+
+
+  const handleCloseUpdateDialog = () => {
+    setOpenUpdateDialog(false);
+  };
+
+  const handleUpdatePatient = async () => {
+    try {
+      if (editPatientDetails && accessToken) {
+        await axios.put(`http://localhost:8080/api/v1/patients/${id}`, editPatientDetails, {
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+          },
+        });
+        setPatient(editPatientDetails); // Update patient details
+        handleCloseUpdateDialog();
+      }
+    } catch (error) {
+      console.error('Error updating patient details:', error);
+    }
+  };
 
   const handleCreateAppointment = (record: MedicalRecord) => {
     navigate('/dashboard/create-appointment', {
@@ -236,140 +275,371 @@ const PatientDetails: React.FC = () => {
 >
   Back
 </Button>
+
         <Typography variant="h4" gutterBottom align="left" marginLeft={5} marginTop={2} sx={{ color: '#1a202c', fontWeight: 'bold' }}>
           Patient Information Overview
         </Typography>
-  
-        <TextField
+    
+        <Button
+          variant="contained"
+          color="primary"
+          onClick={handleOpenUpdateDialog}
+          startIcon={<EditIcon />}
+          sx={{ marginRight: 5, marginTop: 2 }}
+        >
+          Edit
+        </Button>
+        {/* <TextField
           label="Search Doctor..."
           variant="outlined"
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
           sx={{ marginRight: 5, marginTop: 9 }}
-        />
+        /> */}
       </Grid>
+        {/* Dialog for editing patient details */}
+        <Dialog open={openUpdateDialog} onClose={handleCloseUpdateDialog}>
+        <DialogTitle>Edit Patient Details</DialogTitle>
+        <DialogContent>
+          <TextField
+            margin="dense"
+            label="Name"
+            fullWidth
+            value={editPatientDetails?.name || ''}
+            onChange={(e) => setEditPatientDetails({ ...editPatientDetails!, name: e.target.value })}
+          />
+          <TextField
+            margin="dense"
+            label="Age"
+            fullWidth
+            value={editPatientDetails?.age || ''}
+            onChange={(e) => setEditPatientDetails({ ...editPatientDetails!, age: parseInt(e.target.value) })}
+          />
+          <TextField
+            margin="dense"
+            label="Phone Number"
+            fullWidth
+            value={editPatientDetails?.phoneNumber || ''}
+            onChange={(e) => setEditPatientDetails({ ...editPatientDetails!, phoneNumber: e.target.value })}
+          />
+          {/* Add more fields as necessary */}
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleCloseUpdateDialog} color="secondary">
+            Cancel
+          </Button>
+          <Button onClick={handleUpdatePatient} color="primary">
+            Save
+          </Button>
+        </DialogActions>
+      </Dialog>
 
-      <Grid container spacing={4} sx={{ marginTop: 4 }}>
-        <Grid item xs={12} md={6}>
-          <TopStyledCard>
-            <CardContent>
-              <Grid container alignItems="center" spacing={3}>
-                <Grid item>
-                  <Avatar src={patientImage || patientEye} sx={{ width: 120, height: 120, marginRight: 3 }} />
-                </Grid>
-                <Grid item>
-                  <PatientNameTypography>{patient.name}</PatientNameTypography>
-                  <PatientInfoTypography>Age: {patient.age}</PatientInfoTypography>
-                  <PatientInfoTypography>Patient Token: {patient.patientToken}</PatientInfoTypography>
-                  <PatientInfoTypography>Blood Group: {patient.bloodGroup}</PatientInfoTypography>
-                  <PatientInfoTypography>Phone Number: {patient.phoneNumber}</PatientInfoTypography>
-                </Grid>
-              </Grid>
-            </CardContent>
-          </TopStyledCard>
+     <Grid container spacing={4} sx={{ marginTop: 4 }}>
+  {/* Left Card - Patient Information */}
+  <Grid item xs={12} md={6}>
+    <TopStyledCard sx={{ boxShadow: 3, borderRadius: 3 }}>
+      <CardContent>
+        <Grid container alignItems="center" spacing={3}>
+          <Grid item>
+            <Avatar
+              src={patientImage || patientEye}
+              sx={{
+                width: 120,
+                height: 120,
+                marginRight: 3,
+                border: '2px solid #3f51b5', // Add border for a subtle visual pop
+                boxShadow: '0px 4px 12px rgba(0, 0, 0, 0.1)' // Light shadow for depth
+              }}
+            />
+          </Grid>
+          <Grid item>
+            <PatientNameTypography
+              sx={{
+                fontWeight: 'bold',
+                fontSize: '1.5rem',
+                color: '#333',
+                marginBottom: 1
+              }}
+            >
+              {patient.name}
+            </PatientNameTypography>
+            <PatientInfoTypography
+              sx={{ fontSize: '1rem', color: '#757575', marginBottom: 0.5 }}
+            >
+              Age: {patient.age}
+            </PatientInfoTypography>
+            <PatientInfoTypography
+              sx={{ fontSize: '1rem', color: '#757575', marginBottom: 0.5 }}
+            >
+              Patient Token: {patient.patientToken}
+            </PatientInfoTypography>
+            <PatientInfoTypography
+              sx={{ fontSize: '1rem', color: '#757575', marginBottom: 0.5 }}
+            >
+              Blood Group: {patient.bloodGroup}
+            </PatientInfoTypography>
+            <PatientInfoTypography
+              sx={{ fontSize: '1rem', color: '#757575', marginBottom: 0.5 }}
+            >
+              Phone Number: {patient.phoneNumber}
+            </PatientInfoTypography>
+          </Grid>
         </Grid>
+      </CardContent>
+    </TopStyledCard>
+  </Grid>
 
+  {/* Right Table - Medical Records */}
+  <Grid item xs={12} md={6}>
+    <TableContainer
+      component={Paper}
+      sx={{
+        maxHeight: '300px',
+        borderRadius: 2,
+        boxShadow: 3, // Add shadow for depth
+        backgroundColor: '#fafafa' // Light background color for contrast
+      }}
+    >
+      <Table stickyHeader>
+        <TableHead>
+          <TableRow>
+            <StyledTableCell sx={{ fontWeight: 'bold', fontSize: '1rem' }}>
+              Doctor Name
+            </StyledTableCell>
+            <StyledTableCell sx={{ fontWeight: 'bold', fontSize: '1rem' }}>
+              Visit Date
+            </StyledTableCell>
+            <StyledTableCell sx={{ fontWeight: 'bold', fontSize: '1rem' }}>
+              Appointment
+            </StyledTableCell>
+          </TableRow>
+        </TableHead>
+        <TableBody>
+          {sortedMedicalRecords.map((record) => (
+            <TableRow
+              key={record.id}
+              sx={{
+                '&:hover': {
+                  backgroundColor: '#f5f5f5' // Highlight row on hover
+                }
+              }}
+            >
+              <TableCell>
+                <ActionButton
+                  variant="contained"
+                  sx={{
+                    backgroundColor: '#3f51b5',
+                    color: '#fff',
+                    boxShadow: 2,
+                    ':hover': {
+                      backgroundColor: '#2c387e' // Darken button on hover
+                    }
+                  }}
+                  onClick={() => handleFetchMedicalRecordDetails(record.id)}
+                >
+                  {record.doctorFirstName}
+                </ActionButton>
+              </TableCell>
+              <TableCell>{new Date(record.visitDate).toLocaleDateString()}</TableCell>
+              <TableCell>
+                <ActionButton
+                  variant="contained"
+                  sx={{
+                    backgroundColor: '#4caf50',
+                    color: '#fff',
+                    boxShadow: 2,
+                    ':hover': {
+                      backgroundColor: '#388e3c' // Darken button on hover
+                    }
+                  }}
+                  onClick={() => handleCreateAppointment(record)}
+                >
+                  New Appointment
+                </ActionButton>
+              </TableCell>
+            </TableRow>
+          ))}
+        </TableBody>
+      </Table>
+    </TableContainer>
+  </Grid>
+</Grid>
 
-        <Grid item xs={12} md={6}>
-            <TableContainer component={Paper} style={{ maxHeight: '300px', borderRadius: '15px' }}>
-              <Table stickyHeader>
-                <TableHead>
-                  <TableRow>
-                    <StyledTableCell>Doctor Name</StyledTableCell>
-                    <StyledTableCell>Visit Date</StyledTableCell>
-                    <StyledTableCell>Appointment</StyledTableCell>
-                  </TableRow>
-                </TableHead>
-                <TableBody>
-                  {sortedMedicalRecords.map((record) => (
-                    <TableRow key={record.id}>
-                      <TableCell>
-                        <ActionButton
-                          variant="contained"
-                          onClick={() => handleFetchMedicalRecordDetails(record.id)}
-                        >
-                          {record.doctorFirstName}
-                        </ActionButton>
-                      </TableCell>
-                      <TableCell>
-                        {new Date(record.visitDate).toLocaleDateString()}
-                      </TableCell>
-                      <TableCell>
-                        <ActionButton
-                          variant="contained"
-                          onClick={() => handleCreateAppointment(record)}
-                        >
-                          New Appointment
-                        </ActionButton>
-                      </TableCell>
+<Grid container spacing={3} sx={{ marginTop: 3 }}>
+  <Grid item xs={12}>
+    <BottomStyledCard
+      sx={{
+        background: 'linear-gradient(135deg, #f0f7ff, #e0f2ff)',
+        borderRadius: '20px',
+        boxShadow: '0px 8px 24px rgba(0, 0, 0, 0.12)',
+        padding: 3,
+        transition: 'transform 0.3s',
+        '&:hover': {
+          transform: 'translateY(-5px)',
+          boxShadow: '0px 12px 24px rgba(0, 0, 0, 0.2)',
+        },
+      }}
+    >
+      <CardContent>
+        <Typography
+          variant="h5"
+          sx={{
+            fontWeight: 'bold',
+            color: '#1976d2',
+            textAlign: 'center',
+            marginBottom: 3,
+          }}
+        >
+          Patient Details
+        </Typography>
+
+        <Grid container spacing={3}>
+          {/* Medications */}
+          <Grid item xs={12} sm={6}>
+            <Typography variant="h6" sx={{ fontWeight: 'bold', color: '#1976d2', marginBottom: 2 }}>
+              Medications
+            </Typography>
+            {selectedRecord ? (
+              <TableContainer
+                component={Paper}
+                sx={{
+                  maxHeight: '300px',
+                  borderRadius: '20px',
+                  boxShadow: '0px 2px 10px rgba(0, 0, 0, 0.1)',
+                  transition: 'background-color 0.3s',
+                  '&:hover': {
+                    backgroundColor: '#f5faff',
+                  },
+                }}
+              >
+                <Table stickyHeader>
+                  <TableHead>
+                    <TableRow>
+                      <StyledTableCell sx={{ fontWeight: 'bold', color: '#1976d2', backgroundColor: '#e0f2ff' }}>
+                        Medication Name
+                      </StyledTableCell>
+                      <StyledTableCell sx={{ fontWeight: 'bold', color: '#1976d2', backgroundColor: '#e0f2ff' }}>
+                        Dosage
+                      </StyledTableCell>
+                      <StyledTableCell sx={{ fontWeight: 'bold', color: '#1976d2', backgroundColor: '#e0f2ff' }}>
+                        Instructions
+                      </StyledTableCell>
                     </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            </TableContainer>
+                  </TableHead>
+                  <TableBody>
+                    {selectedRecord.medications.map((medication) => (
+                      <TableRow
+                        key={medication.id}
+                        sx={{
+                          '&:hover': {
+                            backgroundColor: '#f0f7ff',
+                            transition: 'background-color 0.3s ease',
+                          },
+                        }}
+                      >
+                        <TableCell>{medication.medicationName}</TableCell>
+                        <TableCell>{medication.dosage}</TableCell>
+                        <TableCell>{medication.instructions}</TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </TableContainer>
+            ) : (
+              <Typography sx={{ color: '#333' }}>No medications available</Typography>
+            )}
+          </Grid>
+
+          {/* Clinic and Branch Details */}
+          <Grid item xs={12} sm={6}>
+            <Typography variant="h6" sx={{ fontWeight: 'bold', color: '#1976d2', marginBottom: 2 ,marginLeft:35}}>
+              Clinic Information
+            </Typography>
+            <Box sx={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'flex-start',marginLeft:35 }}>
+              <Typography sx={{ marginBottom: 1, color: '#000' }}>
+                <strong>Clinic Name:</strong> {selectedRecord?.clinicName || 'N/A'}
+              </Typography>
+              <Typography sx={{ marginBottom: 1, color: '#000' }}>
+                <strong>Branch Name:</strong> {selectedRecord?.branchName || 'N/A'}
+              </Typography>
+              <Typography sx={{ marginBottom: 1, color: '#000' }}>
+                <strong>Amount:</strong> {selectedRecord?.amount || 'N/A'}
+              </Typography>
+            </Box>
           </Grid>
         </Grid>
 
-      <Grid container spacing={2} sx={{ marginTop: 1 }}>
-        {/* Bottom Grid - Medication Details */}
-        <Grid item xs={12} sm={5}>
-          <BottomStyledCard>
-            <CardContent>
-              <Typography variant="h6">Medications</Typography>
-              {selectedRecord ? (
-                <TableContainer component={Paper} style={{ maxHeight: '300px', borderRadius: '20px' }}>
-                  <Table stickyHeader>
-                    <TableHead>
-                      <TableRow>
-                        <StyledTableCell>Medication Name</StyledTableCell>
-                        <StyledTableCell>Dosage</StyledTableCell>
-                        <StyledTableCell>Instructions</StyledTableCell>
-                      </TableRow>
-                    </TableHead>
-                    <TableBody>
-                      {selectedRecord.medications.map((medication) => (
-                        <TableRow key={medication.id}>
-                          <TableCell>{medication.medicationName}</TableCell>
-                          <TableCell>{medication.dosage}</TableCell>
-                          <TableCell>{medication.instructions}</TableCell>
-                        </TableRow>
-                      ))}
-                    </TableBody>
-                  </Table>
-                </TableContainer>
-              ) : (
-                <Typography>No record selected</Typography>
-              )}
-            </CardContent>
-          </BottomStyledCard>
+        <Grid container spacing={3} sx={{ marginTop: 3 }}>
+          {/* Vital Signs and Diagnosis */}
+          <Grid item xs={12}>
+            <Typography variant="h6" sx={{ fontWeight: 'bold', color: '#d81b60', marginBottom: 2 }}>
+              Vital Signs and Diagnosis
+            </Typography>
+            <Grid container spacing={3}>
+              <Grid item xs={12} sm={4}>
+                <Box
+                  sx={{
+                    padding: 2,
+                    borderRadius: '10px',
+                    background: '#f9f9f9',
+                    boxShadow: '0px 2px 5px rgba(0, 0, 0, 0.1)',
+                    transition: 'transform 0.3s',
+                    '&:hover': {
+                      transform: 'scale(1.02)',
+                    },
+                  }}
+                >
+                  <Typography sx={{ color: '#000', marginBottom: 1 }}>
+                    <strong>Vital Signs:</strong> {selectedRecord?.vitalSigns || 'N/A'}
+                  </Typography>
+                </Box>
+              </Grid>
+              <Grid item xs={12} sm={4}>
+                <Box
+                  sx={{
+                    padding: 2,
+                    borderRadius: '10px',
+                    background: '#f9f9f9',
+                    boxShadow: '0px 2px 5px rgba(0, 0, 0, 0.1)',
+                    transition: 'transform 0.3s',
+                    '&:hover': {
+                      transform: 'scale(1.02)',
+                    },
+                  }}
+                >
+                  <Typography sx={{ color: '#000', marginBottom: 1 }}>
+                    <strong>Treatment:</strong> {selectedRecord?.treatment || 'N/A'}
+                  </Typography>
+                </Box>
+              </Grid>
+              <Grid item xs={12} sm={4}>
+                <Box
+                  sx={{
+                    padding: 2,
+                    borderRadius: '10px',
+                    background: '#f9f9f9',
+                    boxShadow: '0px 2px 5px rgba(0, 0, 0, 0.1)',
+                    transition: 'transform 0.3s',
+                    '&:hover': {
+                      transform: 'scale(1.02)',
+                    },
+                  }}
+                >
+                  <Typography sx={{ color: '#000' }}>
+                    <strong>Diagnosis:</strong> {selectedRecord?.diagnosis || 'N/A'}
+                  </Typography>
+                </Box>
+              </Grid>
+            </Grid>
+          </Grid>
         </Grid>
+      </CardContent>
+    </BottomStyledCard>
+  </Grid>
+</Grid>
 
-        {/* Bottom Grid - Diagnosis and Treatments */}
-        <Grid item xs={12} sm={3}>
-  <BottomStyledCard>
-    <CardContent>
-      <Typography variant="h6" sx={{ color: '#1976d2', fontWeight: 'bold' ,textAlign:'center'}}> Clinic Name:</Typography>
-      <Typography sx={{ marginBottom: 2, color: 'black',textAlign:'center'}}>{selectedRecord?.clinicName || 'N/A'}</Typography>
-      <Typography variant="h6" sx={{ color: '#1976d2', fontWeight: 'bold',textAlign:'center'}}>Branch Name:</Typography>
-      <Typography sx={{ marginBottom: 2, color: '#black',textAlign:'center'}}>{selectedRecord?.branchName || 'N/A'}</Typography>
-      <Typography variant="h6" sx={{ color: '#1976d2', fontWeight: 'bold' ,textAlign:'center'}}>Amount :</Typography>
-      <Typography sx={{ color: 'black',textAlign:'center' }}>{selectedRecord?.amount || 'N/A'}</Typography>
-    </CardContent>
-  </BottomStyledCard>
-</Grid>
-<Grid item xs={12} sm={4}>
-  <BottomStyledCard>
-    <CardContent>
-      <Typography variant="h6" sx={{ color: '#1976d2', fontWeight: 'bold' ,textAlign:'center'}}>Vital Signs:</Typography>
-      <Typography sx={{ marginBottom: 2, color: 'black',textAlign:'center'}}>{selectedRecord?.vitalSigns || 'N/A'}</Typography>
-      <Typography variant="h6" sx={{ color: '#1976d2', fontWeight: 'bold',textAlign:'center'}}>Treatment:</Typography>
-      <Typography sx={{ marginBottom: 2, color: '#black',textAlign:'center'}}>{selectedRecord?.treatment || 'N/A'}</Typography>
-      <Typography variant="h6" sx={{ color: '#1976d2', fontWeight: 'bold' ,textAlign:'center'}}>Diagnosis:</Typography>
-      <Typography sx={{ color: 'black',textAlign:'center' }}>{selectedRecord?.diagnosis || 'N/A'}</Typography>
-    </CardContent>
-  </BottomStyledCard>
-</Grid>
-      </Grid>
+
+
     </AnimatedBox>
   );
 };

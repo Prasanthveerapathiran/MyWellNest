@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { BrowserRouter as Router, Route, Routes, useParams } from 'react-router-dom';
+import { BrowserRouter as Router, Route, Routes, useParams, Navigate } from 'react-router-dom';
 import SignUp from './componenets/loginAndSignUp/SignUp';
 import DashboardLayout from './componenets/Dashboard/DashboardLayout';
 import Dashboard from './componenets/Dashboard/Dashboard';
@@ -38,6 +38,10 @@ import WellNestDetail from './componenets/Dashboard/WellNestDetail';
 import MedicationStackForm from './tools/MedicationStackForm';
 import NewPage from './componenets/Dashboard/NewPage';
 import ContactPage from './componenets/Dashboard/ContactPage';
+import ClinicStaffDetails from './componenets/Clinic/ClinicStaffDetails';
+import Portal from './SuperAdmin/Portal';
+import DashboardSuperAdmin from './SuperAdmin/DashboardSuperAdmin';
+import Frontdesk from './componenets/Front_desk/Frontdesk';
 
 
 
@@ -75,9 +79,14 @@ const App: React.FC = () => {
           <Route path="/showOneClinic" element={<ShowOneClinic open={true} onClose={handleDialogClose} />} />
           <Route path="/useremail" element={<FetchEmailName />} />
           <Route path="/dashboard/medications" element={<MedicationStackForm />} />
+          <Route path="/portal" element={<Portal />} />
+          {/* <Route path="/dashboardSuperAdmin" element={<DashboardSuperAdmin />} /> */}
+       
+          {/* <Route path="users" element={<ManageUsers />} />
+          <Route path="settings" element={<Settings />} /> */}
 
           
-          
+          <Route path="/clinic/:clinicId/staff" element={<ClinicStaffDetails />} />
           {/* <Route path="/showOneClinic/:clinicName" element={<ShowOneClinic />} /> */}
           {/* <Route path="/clinic" element={<Clinic />} />
           <Route path="/branch" element={<Branch />} /> */}
@@ -91,6 +100,7 @@ const App: React.FC = () => {
             <Route path="record" element={<Record />} />
             <Route path="appointments" element={<Appointments />} />
             <Route path="create-appointment" element={<CreateAppointment />} />
+            <Route path="frontdesk" element={<Frontdesk />} />
             {/* <Route path="payments" element={<Payments />} /> */}
             <Route path="invoices" element={<Invoices />} />
             <Route path="services" element={<Services />} />
@@ -119,6 +129,15 @@ const App: React.FC = () => {
           <Route path="/new-page" element={<NewPage />} /> 
           <Route path="/contact" element={<ContactPage />} />
          
+
+           {/* Routes that require the Portal layout */}
+           <Route path="/portal" element={<Portal />}>
+          <Route index element={<Navigate to="/portal/dashboardSuperAdmin" />} />
+          <Route path="dashboardSuperAdmin" element={<DashboardSuperAdmin />} />
+          {/* <Route path="users" element={<Users />} />
+          <Route path="settings" element={<Settings />} /> */}
+        </Route>
+        
         </Routes>
       </div>
     </Router>

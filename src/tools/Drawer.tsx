@@ -23,8 +23,8 @@ const Drawer: React.FC<DrawerProps> = ({ drawerOpen, toggleDrawer }) => {
   const userRole = localStorage.getItem('role');
 
   const menuItems = [
-    { text: 'Dashboard', icon: <DashboardIcon />, path: '/dashboard', roles: ['MANAGER', 'DOCTOR','ADMIN'] },
-    { text: 'Patients', icon: <PeopleIcon />, path: '/dashboard/patients', roles: ['ADMIN', 'MANAGER', 'DOCTOR'] },
+    { text: 'Dashboard', icon: <DashboardIcon />, path: '/dashboard', roles: ['MANAGER'] },
+    { text: 'Patients', icon: <PeopleIcon />, path: '/dashboard/patients', roles: ['ADMIN', 'MANAGER', 'DOCTOR','FRONT_DESK'] },
     { text: 'Appointments', icon: <ScheduleIcon />, path: '/dashboard/appointments', roles: ['ADMIN','MANAGER', 'DOCTOR'] },
     // { text: 'Payments', icon: <ReceiptIcon />, path: '/dashboard/payments', roles: ['ADMIN', 'MANAGER', 'DOCTOR'] },
      { text: 'Doctors', icon: <MedicalServicesIcon />, path: '/dashboard/doctors' , roles: [ 'MANAGER', 'DOCTOR'] },
@@ -33,7 +33,7 @@ const Drawer: React.FC<DrawerProps> = ({ drawerOpen, toggleDrawer }) => {
     { text: 'Invoices', icon: <ReceiptIcon />, path: '/dashboard/invoices', roles: ['ADMIN', 'MANAGER'] },
     { text: 'ourdoctors', icon: <LocalHospitalIcon />, path: '/dashboard/ourdoctors',roles: ['ADMIN', ] },
     { text: 'consultation', icon: <LocalHospitalIcon />, path: '/dashboard/record', roles: ['DOCTOR'] },
-    //  { text: 'medition stack', icon: <LocalHospitalIcon />, path: '/dashboard/medications', roles: ['ADMIN'] },
+     { text: 'Front desk', icon: <LocalHospitalIcon />, path: '/dashboard/frontdesk', roles: ['FRONT_DESK'] },
    
 
 

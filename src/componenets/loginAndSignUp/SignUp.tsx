@@ -296,6 +296,7 @@ const SignUp: React.FC = () => {
                 >
                   <MenuItem value="ADMIN">Admin</MenuItem>
                   <MenuItem value="DOCTOR">Doctor</MenuItem>
+                  <MenuItem value="MANAGER">Manager</MenuItem>
                 </TextField>
               </Grid>
               <Grid item xs={12} sm={6}>
