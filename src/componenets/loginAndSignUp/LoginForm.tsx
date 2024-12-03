@@ -167,24 +167,28 @@ const LoginForm: React.FC = () => {
           setAccessToken(access_token);
           setRefreshToken(refresh_token);
           localStorage.setItem('username', email);
-          localStorage.setItem('role', user.role);
+          localStorage.setItem('roleName', user.roleName);
           localStorage.setItem('id', user.id);
 
           setAlertState({ type: 'success', message: 'Login successful! Redirecting to dashboard...' });
 
           setTimeout(() => {
-            if (user.role === 'SUPER_ADMIN') {
-               navigate('/showOneClinic');
-              //navigate('/portal');
-            } else if (user.role === 'Manager') {
+            if (user.roleName === 'SUPER_ADMIN') { // Ensure this matches the role name
+              navigate('/showOneClinic');
+            } else if (user.roleName === 'MANAGER') {
               navigate('/dashboard');
-            } else if (user.role === 'DOCTOR' || user.role === 'ADMIN') {
-              navigate('/dashboard/patients');
-            } else {
-              // Default navigation for any other roles
-              navigate('/dashboard');
+            } else if ( user.roleName === 'ADMIN') {
+              navigate('dashboard/patients');
+            } else if (user.roleName === 'DOCTOR') {
+              navigate('/dashboard/appointments');
+            }
+            else if ( user.roleName === 'FRONT_DESK') {
+              navigate('dashboard/frontdesk');
+            }else {
+              navigate('/dashboard'); // Default route for other roles
             }
           }, 2000);
+          
           
         } else {
           // Deny login if status is false

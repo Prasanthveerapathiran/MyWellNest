@@ -8,6 +8,7 @@ interface Doctor {
   id: number;
   firstName: string;
   email: string;
+  roleName:string;
   specialization: string | null;
   address: {
     phoneNumber: string;
@@ -22,7 +23,7 @@ const OurDoctors: React.FC = () => {
   useEffect(() => {
     const fetchDoctors = async () => {
       try {
-        const response = await axios.get('http://localhost:8080/api/v1/users/role/DOCTOR', {
+        const response = await axios.get('http://localhost:8080/api/v1/users', {
           headers: {
             Authorization: `Bearer ${accessToken}`,
           },
@@ -60,7 +61,7 @@ const OurDoctors: React.FC = () => {
   return (
     <>
       <Typography variant="h4" style={{ textAlign: 'center', marginTop: '20px' }}>
-        Our Doctors
+        Our Staff's
       </Typography>
       <motion.div
         initial={{ opacity: 0, y: 50 }}
@@ -74,6 +75,7 @@ const OurDoctors: React.FC = () => {
                 <TableCell style={{ backgroundColor: '#e0f7fa', fontWeight: 'bold' }}>First Name</TableCell>
                 <TableCell style={{ backgroundColor: '#e0f7fa', fontWeight: 'bold' }}>Email</TableCell>
                 <TableCell style={{ backgroundColor: '#e0f7fa', fontWeight: 'bold' }}>Specialization</TableCell>
+                <TableCell style={{ backgroundColor: '#e0f7fa', fontWeight: 'bold' }}>Role</TableCell>
                 <TableCell style={{ backgroundColor: '#e0f7fa', fontWeight: 'bold' }}>Phone Number</TableCell>
                 <TableCell style={{ backgroundColor: '#e0f7fa', fontWeight: 'bold' }}>Status</TableCell>
               </TableRow>
@@ -84,6 +86,7 @@ const OurDoctors: React.FC = () => {
                   <TableCell>{doctor.firstName}</TableCell>
                   <TableCell>{doctor.email}</TableCell>
                   <TableCell>{doctor.specialization || 'N/A'}</TableCell>
+                  <TableCell>{doctor.roleName || 'N/A'}</TableCell>
                   <TableCell>{doctor.address?.phoneNumber || 'N/A'}</TableCell>
                   <TableCell>
                     {doctor.address ? (

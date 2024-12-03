@@ -32,6 +32,8 @@ import withDragAndDrop from "react-big-calendar/lib/addons/dragAndDrop";
 const localizer = momentLocalizer(moment);
 const DnDCalendar = withDragAndDrop(Calendar);
 const CreateAppointment: React.FC = () => {
+ 
+
   const [appointments, setAppointments] = useState<Event[]>([]);
   const [existingAppointments, setExistingAppointments] = useState<Appointment[]>([]);
   const [status, setStatus] = useState<string>('regular check up');
@@ -44,14 +46,39 @@ const CreateAppointment: React.FC = () => {
   const location = useLocation();
   const { accessToken } = useToken();
   const [openDropConfirmDialog, setOpenDropConfirmDialog] = useState<boolean>(false);
-  const { doctorId, patientId, clinicId, branchId, patientName, doctorName } = location.state || {};
+  const { id,doctorId, patientId, clinicId, branchId, patientName, doctorName } = location.state || {};
   useEffect(() => {
-    if (patientId && doctorId) {
-      // Use the patientId and doctorId to pre-fill or handle in your form
+    if (id && patientId && doctorId) {
+      // Log for debugging
       console.log("Rescheduling appointment for patientId:", patientId);
       console.log("With doctorId:", doctorId);
+      console.log("With appointmentId:", id);
+  
+      // Set initial details for editing the existing appointment
+      const existingAppointment = existingAppointments.find(
+        (appointment) => appointment.id === id
+      );
+      if (existingAppointment) {
+        setAppointmentDetails({
+          start: new Date(existingAppointment.startTime),
+          end: new Date(existingAppointment.endTime),
+          newAppointment: {
+            doctorId,
+            patientId,
+            startTime: existingAppointment.startTime,
+            endTime: existingAppointment.endTime,
+            status: existingAppointment.status || 'regular check up',
+            descriptions: existingAppointment.descriptions || '',
+            shareWithPatient: existingAppointment.shareWithPatient || 'whatsapp',
+            clinicId,
+            branchId,
+          },
+          appointmentId: id, // Use this for PUT requests
+        });
+      }
     }
-  }, [patientId, doctorId]);
+  }, [id, patientId, doctorId, existingAppointments]);
+  
 
   const checkForConflicts = (newStartTime: string, newEndTime: string) => {
     const newStart = new Date(newStartTime);
@@ -324,16 +351,21 @@ const CreateAppointment: React.FC = () => {
 
             <Grid item xs={6}>
               <FormControl component="fieldset" style={{ marginBottom: '20px', display: 'flex', flexDirection: 'row', justifyContent: 'space-around' }}>
+                {/* <FormControlLabel
+                  control={<Checkbox checked={status === 'New'} onChange={handleStatusChange} value="New" />}
+                  label="New"
+                /> */}
                 <FormControlLabel
-                  control={<Checkbox checked={status === 'regular check up'} onChange={handleStatusChange} value="regular check up" />}
-                  label="Regular Check Up"
+                  control={<Checkbox checked={status === 'Follow-up'} onChange={handleStatusChange} value="Follow-up" />}
+                  label="Follow-up"
                 />
-                <FormControlLabel
+                 <FormControlLabel
                   control={<Checkbox checked={status === 'emergency'} onChange={handleStatusChange} value="emergency" />}
                   label="Emergency"
                 />
+               
               </FormControl>
-
+              
               <FormControl style={{ marginBottom: '20px', width: '100%' }}>
                 <InputLabel id="share-with-patient-label">Share with Patient</InputLabel>
                 <Select

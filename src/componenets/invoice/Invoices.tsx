@@ -250,42 +250,49 @@ const Invoices: React.FC = () => {
         animate={{ opacity: 1, y: 2 }}
         transition={{ duration: 1.5 }}
       >
-        <TableContainer component={Paper}>
-          <Table stickyHeader>
-            <TableHead>
-              <TableRow>
-                <TableCell style={{ backgroundColor: '#e0f7fa', fontWeight: 'bold' }}>Patient Name</TableCell>
-                <TableCell style={{ backgroundColor: '#e0f7fa', fontWeight: 'bold' }}>Diagnosis</TableCell>
-                <TableCell style={{ backgroundColor: '#e0f7fa', fontWeight: 'bold' }}>Visit Date</TableCell>
-                <TableCell style={{ backgroundColor: '#e0f7fa', fontWeight: 'bold' }}>Payment Status</TableCell>
-                <TableCell style={{ backgroundColor: '#e0f7fa', fontWeight: 'bold' }}>Action</TableCell>
-              </TableRow>
-            </TableHead>
-            <TableBody>
-              {filteredData.map((record) => (
-                <TableRow key={record.id}>
-                  <TableCell>{record.patientName}</TableCell>
-                  <TableCell>{record.diagnosis}</TableCell>
-                  <TableCell>{new Date(record.visitDate).toLocaleDateString()}</TableCell>
-                  <TableCell>{record.paymentStatus}</TableCell>
-                  <TableCell>
-                    {record.paymentStatus === 'unpaid' ? (
-                      <Button
-                        variant="contained"
-                        color="primary"
-                        onClick={() => handlePaymentClick(record.patientId)}
-                      >
-                        Pay
-                      </Button>
-                    ) : (
-                      <CheckCircleIcon color="success" />
-                    )}
-                  </TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        </TableContainer>
+      <TableContainer component={Paper}>
+  <Table stickyHeader>
+    <TableHead>
+      <TableRow>
+        <TableCell style={{ backgroundColor: '#e0f7fa', fontWeight: 'bold' }}>Patient Name</TableCell>
+        <TableCell style={{ backgroundColor: '#e0f7fa', fontWeight: 'bold' }}>Diagnosis</TableCell>
+        <TableCell style={{ backgroundColor: '#e0f7fa', fontWeight: 'bold' }}>Visit Date</TableCell>
+        <TableCell style={{ backgroundColor: '#e0f7fa', fontWeight: 'bold' }}>Due Amount</TableCell>
+        <TableCell style={{ backgroundColor: '#e0f7fa', fontWeight: 'bold' }}>Paid Amount</TableCell>
+        <TableCell style={{ backgroundColor: '#e0f7fa', fontWeight: 'bold' }}>Payment Status</TableCell>
+      </TableRow>
+    </TableHead>
+    <TableBody>
+      {filteredData.map((record) => (
+        <TableRow key={record.id}>
+          <TableCell>{record.patientName}</TableCell>
+          <TableCell>{record.diagnosis}</TableCell>
+          <TableCell>{new Date(record.visitDate).toLocaleDateString()}</TableCell>
+          <TableCell>
+            {record.paymentStatus === 'unpaid' ? `$${record.amount}` : `$0`}
+          </TableCell>
+          <TableCell>
+            {record.paymentStatus === 'paid' ? `$${record.amount}` : `$0`}
+          </TableCell>
+          <TableCell>
+            {record.paymentStatus === 'unpaid' ? (
+              <Button
+                variant="contained"
+                color="primary"
+                onClick={() => handlePaymentClick(record.patientId)}
+              >
+                Pay
+              </Button>
+            ) : (
+              <CheckCircleIcon color="success" />
+            )}
+          </TableCell>
+        </TableRow>
+      ))}
+    </TableBody>
+  </Table>
+</TableContainer>
+
       </motion.div>
     </div>
   );

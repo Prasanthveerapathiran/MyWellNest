@@ -64,8 +64,12 @@ const SuperAdmin: React.FC = () => {
     navigate('/stepper');
   };
 
+  const handleRoleClick = () => {
+    navigate('/roleCreation');
+  };
+
   const handleWelcomeClick = () => {
-    navigate('/signup');
+    navigate('/allUsers');
   };
 
   const handleLogoutClick = () => {
@@ -80,7 +84,7 @@ const SuperAdmin: React.FC = () => {
     navigate('/');
     localStorage.removeItem('username');
     localStorage.removeItem('refresh_token');
-    localStorage.removeItem('role');
+    localStorage.removeItem('roleName');
     localStorage.removeItem('access_token');
     localStorage.removeItem('id');
   };
@@ -145,9 +149,26 @@ const SuperAdmin: React.FC = () => {
               <Box marginBottom={2}>
                 <StaffIcon style={{ fontSize: 50, color: '#296BE4' }} /> {/* Blue color for StaffIcon */}
               </Box>
-              <Typography variant="h5" margin={2}>Registration</Typography>
+              <Typography variant="h5" margin={2}>User</Typography>
               <Button onClick={handleWelcomeClick} variant="contained" color="primary">
-                Register
+                Create
+              </Button>
+            </CardContent>
+          </MotionBubbleCard>
+        </Grid>
+        <Grid item>
+          <MotionBubbleCard
+            whileHover={{ scale: 1.1, rotate: 5 }}
+            whileTap={{ scale: 0.95, rotate: -5 }}
+            transition={{ type: 'spring', stiffness: 300 }}
+          >
+            <CardContent>
+              <Box marginBottom={2}>
+                <ClinicIcon style={{ fontSize: 50, color: '#296BE4' }} /> {/* Blue color for ClinicIcon */}
+              </Box>
+              <Typography variant="h5" margin={2}>Role</Typography>
+              <Button onClick={handleRoleClick} variant="contained" color="primary">
+                 Create
               </Button>
             </CardContent>
           </MotionBubbleCard>

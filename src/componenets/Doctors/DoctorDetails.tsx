@@ -200,7 +200,7 @@ const DoctorDetails: React.FC = () => {
                   fullWidth
                   sx={{ mt: 2, py: 1, fontSize: 16 }}
                 >
-                  Our Patients
+                  My Patients
                 </Button>
                 {/* <Button
                   variant="contained"

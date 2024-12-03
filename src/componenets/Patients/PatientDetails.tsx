@@ -337,57 +337,125 @@ const PatientDetails: React.FC = () => {
      <Grid container spacing={4} sx={{ marginTop: 4 }}>
   {/* Left Card - Patient Information */}
   <Grid item xs={12} md={6}>
-    <TopStyledCard sx={{ boxShadow: 3, borderRadius: 3 }}>
-      <CardContent>
-        <Grid container alignItems="center" spacing={3}>
-          <Grid item>
-            <Avatar
-              src={patientImage || patientEye}
-              sx={{
-                width: 120,
-                height: 120,
-                marginRight: 3,
-                border: '2px solid #3f51b5', // Add border for a subtle visual pop
-                boxShadow: '0px 4px 12px rgba(0, 0, 0, 0.1)' // Light shadow for depth
-              }}
-            />
-          </Grid>
-          <Grid item>
-            <PatientNameTypography
-              sx={{
-                fontWeight: 'bold',
-                fontSize: '1.5rem',
-                color: '#333',
-                marginBottom: 1
-              }}
-            >
-              {patient.name}
-            </PatientNameTypography>
-            <PatientInfoTypography
-              sx={{ fontSize: '1rem', color: '#757575', marginBottom: 0.5 }}
-            >
-              Age: {patient.age}
-            </PatientInfoTypography>
-            <PatientInfoTypography
-              sx={{ fontSize: '1rem', color: '#757575', marginBottom: 0.5 }}
-            >
-              Patient Token: {patient.patientToken}
-            </PatientInfoTypography>
-            <PatientInfoTypography
-              sx={{ fontSize: '1rem', color: '#757575', marginBottom: 0.5 }}
-            >
-              Blood Group: {patient.bloodGroup}
-            </PatientInfoTypography>
-            <PatientInfoTypography
-              sx={{ fontSize: '1rem', color: '#757575', marginBottom: 0.5 }}
-            >
-              Phone Number: {patient.phoneNumber}
-            </PatientInfoTypography>
-          </Grid>
+  <TopStyledCard
+    sx={{
+      boxShadow: 5,
+      borderRadius: 4,
+      overflow: 'hidden',
+      background: 'linear-gradient(135deg, #f5f7fa, #c3cfe2)', // Gradient background
+      position: 'relative',
+    }}
+  >
+    {/* Decorative Accent */}
+    <Box
+      sx={{
+        position: 'absolute',
+        top: 0,
+        left: 0,
+        width: '100%',
+        height: '20px',
+        background: 'linear-gradient(90deg, #3f51b5, #1a237e)', // Decorative bar
+      }}
+    ></Box>
+
+    <CardContent sx={{ padding: 4 }}>
+      <Grid container alignItems="center" spacing={3}>
+        {/* Avatar Section */}
+        <Grid item>
+          <Avatar
+            src={patientImage || patientEye}
+            sx={{
+              width: 120,
+              height: 120,
+              border: '4px solid #ffffff', // Bright border
+              boxShadow: '0px 8px 16px rgba(0, 0, 0, 0.2)', // Stronger shadow
+              borderRadius: '50%', // Perfect circle
+            }}
+          />
         </Grid>
-      </CardContent>
-    </TopStyledCard>
-  </Grid>
+
+        {/* Patient Details Section */}
+        <Grid item>
+          <PatientNameTypography
+            sx={{
+              fontWeight: 'bold',
+              fontSize: '1.8rem',
+              color: '#3f51b5', // Primary color
+              marginBottom: 1,
+              textShadow: '1px 1px 3px rgba(0, 0, 0, 0.2)', // Subtle text shadow
+            }}
+          >
+            {patient.name}
+          </PatientNameTypography>
+
+          <PatientInfoTypography
+            sx={{
+              fontSize: '1.1rem',
+              color: '#555',
+              marginBottom: 0.5,
+              display: 'flex',
+              alignItems: 'center',
+            }}
+          >
+            <i
+              className="fas fa-calendar-alt"
+              style={{ marginRight: 8, color: '#757575' }}
+            ></i>
+            Age: {patient.age}
+          </PatientInfoTypography>
+
+          <PatientInfoTypography
+            sx={{
+              fontSize: '1.1rem',
+              color: '#555',
+              marginBottom: 0.5,
+              display: 'flex',
+              alignItems: 'center',
+            }}
+          >
+            <i
+              className="fas fa-id-badge"
+              style={{ marginRight: 8, color: '#757575' }}
+            ></i>
+            Patient Token: {patient.patientToken}
+          </PatientInfoTypography>
+
+          <PatientInfoTypography
+            sx={{
+              fontSize: '1.1rem',
+              color: '#555',
+              marginBottom: 0.5,
+              display: 'flex',
+              alignItems: 'center',
+            }}
+          >
+            <i
+              className="fas fa-tint"
+              style={{ marginRight: 8, color: '#ff5722' }}
+            ></i>
+            Blood Group: {patient.bloodGroup}
+          </PatientInfoTypography>
+
+          <PatientInfoTypography
+            sx={{
+              fontSize: '1.1rem',
+              color: '#555',
+              marginBottom: 0.5,
+              display: 'flex',
+              alignItems: 'center',
+            }}
+          >
+            <i
+              className="fas fa-phone-alt"
+              style={{ marginRight: 8, color: '#4caf50' }}
+            ></i>
+            Phone Number: {patient.phoneNumber}
+          </PatientInfoTypography>
+        </Grid>
+      </Grid>
+    </CardContent>
+  </TopStyledCard>
+</Grid>
 
   {/* Right Table - Medical Records */}
   <Grid item xs={12} md={6}>
@@ -469,14 +537,14 @@ const PatientDetails: React.FC = () => {
   <Grid item xs={12}>
     <BottomStyledCard
       sx={{
-        background: 'linear-gradient(135deg, #f0f7ff, #e0f2ff)',
-        borderRadius: '20px',
-        boxShadow: '0px 8px 24px rgba(0, 0, 0, 0.12)',
-        padding: 3,
-        transition: 'transform 0.3s',
+        background: 'linear-gradient(135deg, , #f0f4c3)', // Soft gradient background
+        borderRadius: '25px',
+        boxShadow: '0px 10px 30px rgba(0, 0, 0, 0.15)', // Elevated shadow for depth
+        padding: 4,
+        transition: 'transform 0.3s, box-shadow 0.3s',
         '&:hover': {
           transform: 'translateY(-5px)',
-          boxShadow: '0px 12px 24px rgba(0, 0, 0, 0.2)',
+          boxShadow: '0px 15px 35px rgba(0, 0, 0, 0.25)', // Dynamic shadow effect
         },
       }}
     >
@@ -485,18 +553,29 @@ const PatientDetails: React.FC = () => {
           variant="h5"
           sx={{
             fontWeight: 'bold',
-            color: '#1976d2',
+            color: '#1e88e5', // Accent blue color
             textAlign: 'center',
-            marginBottom: 3,
+            marginBottom: 4,
+            letterSpacing: '1px', // Subtle text spacing
           }}
         >
           Patient Details
         </Typography>
 
-        <Grid container spacing={3}>
+        <Grid container spacing={4}>
           {/* Medications */}
           <Grid item xs={12} sm={6}>
-            <Typography variant="h6" sx={{ fontWeight: 'bold', color: '#1976d2', marginBottom: 2 }}>
+            <Typography
+              variant="h6"
+              sx={{
+                fontWeight: 'bold',
+                color: '#1e88e5',
+                marginBottom: 3,
+                borderBottom: '2px solid #1e88e5',
+                display: 'inline-block',
+                paddingBottom: 1,
+              }}
+            >
               Medications
             </Typography>
             {selectedRecord ? (
@@ -505,23 +584,45 @@ const PatientDetails: React.FC = () => {
                 sx={{
                   maxHeight: '300px',
                   borderRadius: '20px',
-                  boxShadow: '0px 2px 10px rgba(0, 0, 0, 0.1)',
-                  transition: 'background-color 0.3s',
+                  boxShadow: '0px 5px 15px rgba(0, 0, 0, 0.1)',
+                  transition: 'background-color 0.3s, transform 0.3s',
                   '&:hover': {
-                    backgroundColor: '#f5faff',
+                    backgroundColor: '#f1faff',
+                    transform: 'scale(1.01)',
                   },
                 }}
               >
                 <Table stickyHeader>
                   <TableHead>
                     <TableRow>
-                      <StyledTableCell sx={{ fontWeight: 'bold', color: '#1976d2', backgroundColor: '#e0f2ff' }}>
+                      <StyledTableCell
+                        sx={{
+                          fontWeight: 'bold',
+                          color: '#1e88e5',
+                          backgroundColor: '#e3f2fd',
+                          fontSize: '1rem',
+                        }}
+                      >
                         Medication Name
                       </StyledTableCell>
-                      <StyledTableCell sx={{ fontWeight: 'bold', color: '#1976d2', backgroundColor: '#e0f2ff' }}>
+                      <StyledTableCell
+                        sx={{
+                          fontWeight: 'bold',
+                          color: '#1e88e5',
+                          backgroundColor: '#e3f2fd',
+                          fontSize: '1rem',
+                        }}
+                      >
                         Dosage
                       </StyledTableCell>
-                      <StyledTableCell sx={{ fontWeight: 'bold', color: '#1976d2', backgroundColor: '#e0f2ff' }}>
+                      <StyledTableCell
+                        sx={{
+                          fontWeight: 'bold',
+                          color: '#1e88e5',
+                          backgroundColor: '#e3f2fd',
+                          fontSize: '1rem',
+                        }}
+                      >
                         Instructions
                       </StyledTableCell>
                     </TableRow>
@@ -532,7 +633,7 @@ const PatientDetails: React.FC = () => {
                         key={medication.id}
                         sx={{
                           '&:hover': {
-                            backgroundColor: '#f0f7ff',
+                            backgroundColor: '#e8f5e9',
                             transition: 'background-color 0.3s ease',
                           },
                         }}
@@ -546,90 +647,90 @@ const PatientDetails: React.FC = () => {
                 </Table>
               </TableContainer>
             ) : (
-              <Typography sx={{ color: '#333' }}>No medications available</Typography>
+              <Typography sx={{ color: '#757575', fontStyle: 'italic' }}>
+                No medications available
+              </Typography>
             )}
           </Grid>
 
           {/* Clinic and Branch Details */}
           <Grid item xs={12} sm={6}>
-            <Typography variant="h6" sx={{ fontWeight: 'bold', color: '#1976d2', marginBottom: 2 ,marginLeft:35}}>
+            <Typography
+              variant="h6"
+              sx={{
+                fontWeight: 'bold',
+                color: '#1e88e5',
+                marginBottom: 3,
+                borderBottom: '2px solid #1e88e5',
+                display: 'inline-block',
+                paddingBottom: 1,
+              }}
+            >
               Clinic Information
             </Typography>
-            <Box sx={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'flex-start',marginLeft:35 }}>
-              <Typography sx={{ marginBottom: 1, color: '#000' }}>
+            <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2, marginLeft: 3 }}>
+              <Typography sx={{ color: '#424242' }}>
                 <strong>Clinic Name:</strong> {selectedRecord?.clinicName || 'N/A'}
               </Typography>
-              <Typography sx={{ marginBottom: 1, color: '#000' }}>
+              <Typography sx={{ color: '#424242' }}>
                 <strong>Branch Name:</strong> {selectedRecord?.branchName || 'N/A'}
               </Typography>
-              <Typography sx={{ marginBottom: 1, color: '#000' }}>
+              <Typography sx={{ color: '#424242' }}>
                 <strong>Amount:</strong> {selectedRecord?.amount || 'N/A'}
               </Typography>
             </Box>
           </Grid>
         </Grid>
 
-        <Grid container spacing={3} sx={{ marginTop: 3 }}>
-          {/* Vital Signs and Diagnosis */}
+        {/* Vital Signs and Diagnosis */}
+        <Grid container spacing={3} sx={{ marginTop: 4 }}>
           <Grid item xs={12}>
-            <Typography variant="h6" sx={{ fontWeight: 'bold', color: '#d81b60', marginBottom: 2 }}>
+            <Typography
+              variant="h6"
+              sx={{
+                fontWeight: 'bold',
+                color: '#d81b60',
+                marginBottom: 2,
+                borderBottom: '2px solid #d81b60',
+                display: 'inline-block',
+                paddingBottom: 1,
+              }}
+            >
               Vital Signs and Diagnosis
             </Typography>
-            <Grid container spacing={3}>
-              <Grid item xs={12} sm={4}>
-                <Box
-                  sx={{
-                    padding: 2,
-                    borderRadius: '10px',
-                    background: '#f9f9f9',
-                    boxShadow: '0px 2px 5px rgba(0, 0, 0, 0.1)',
-                    transition: 'transform 0.3s',
-                    '&:hover': {
-                      transform: 'scale(1.02)',
-                    },
-                  }}
-                >
-                  <Typography sx={{ color: '#000', marginBottom: 1 }}>
-                    <strong>Vital Signs:</strong> {selectedRecord?.vitalSigns || 'N/A'}
-                  </Typography>
-                </Box>
-              </Grid>
-              <Grid item xs={12} sm={4}>
-                <Box
-                  sx={{
-                    padding: 2,
-                    borderRadius: '10px',
-                    background: '#f9f9f9',
-                    boxShadow: '0px 2px 5px rgba(0, 0, 0, 0.1)',
-                    transition: 'transform 0.3s',
-                    '&:hover': {
-                      transform: 'scale(1.02)',
-                    },
-                  }}
-                >
-                  <Typography sx={{ color: '#000', marginBottom: 1 }}>
-                    <strong>Treatment:</strong> {selectedRecord?.treatment || 'N/A'}
-                  </Typography>
-                </Box>
-              </Grid>
-              <Grid item xs={12} sm={4}>
-                <Box
-                  sx={{
-                    padding: 2,
-                    borderRadius: '10px',
-                    background: '#f9f9f9',
-                    boxShadow: '0px 2px 5px rgba(0, 0, 0, 0.1)',
-                    transition: 'transform 0.3s',
-                    '&:hover': {
-                      transform: 'scale(1.02)',
-                    },
-                  }}
-                >
-                  <Typography sx={{ color: '#000' }}>
-                    <strong>Diagnosis:</strong> {selectedRecord?.diagnosis || 'N/A'}
-                  </Typography>
-                </Box>
-              </Grid>
+            <Grid container spacing={4}>
+              {[
+                { label: 'Vital Signs', value: selectedRecord?.vitalSigns || 'N/A' },
+                { label: 'Treatment', value: selectedRecord?.treatment || 'N/A' },
+                { label: 'Diagnosis', value: selectedRecord?.diagnosis || 'N/A' },
+              ].map((item, index) => (
+                <Grid item xs={12} sm={4} key={index}>
+                  <Box
+                    sx={{
+                      padding: 3,
+                      borderRadius: '15px',
+                      background: '#fff3e0',
+                      boxShadow: '0px 4px 10px rgba(0, 0, 0, 0.1)',
+                      transition: 'transform 0.3s',
+                      '&:hover': {
+                        transform: 'scale(1.05)',
+                      },
+                    }}
+                  >
+                    <Typography
+                      sx={{
+                        fontWeight: 'bold',
+                        color: '#d81b60',
+                        marginBottom: 1,
+                        fontSize: '1rem',
+                      }}
+                    >
+                      {item.label}
+                    </Typography>
+                    <Typography sx={{ color: '#424242' }}>{item.value}</Typography>
+                  </Box>
+                </Grid>
+              ))}
             </Grid>
           </Grid>
         </Grid>
@@ -637,7 +738,6 @@ const PatientDetails: React.FC = () => {
     </BottomStyledCard>
   </Grid>
 </Grid>
-
 
 
     </AnimatedBox>

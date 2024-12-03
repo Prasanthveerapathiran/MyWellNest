@@ -107,7 +107,7 @@ const OurPatients: React.FC = () => {
 
   return (
     <Box>
-      <Typography variant="h5">Our Patients</Typography>
+      <Typography variant="h5">My Patients</Typography>
       {loading ? (
         <CircularProgress />
       ) : error ? (
@@ -122,7 +122,7 @@ const OurPatients: React.FC = () => {
                 <TableCell style={{ backgroundColor: '#e0f7fa', fontWeight: 'bold' }}>Patient ID</TableCell>
                 <TableCell style={{ backgroundColor: '#e0f7fa', fontWeight: 'bold' }}>Patient Name</TableCell>
                 <TableCell style={{ backgroundColor: '#e0f7fa', fontWeight: 'bold' }}>Visit Date</TableCell>
-                <TableCell style={{ backgroundColor: '#e0f7fa', fontWeight: 'bold' }}>Treatment</TableCell>
+                {/* <TableCell style={{ backgroundColor: '#e0f7fa', fontWeight: 'bold' }}>Treatment</TableCell> */}
                 <TableCell style={{ backgroundColor: '#e0f7fa', fontWeight: 'bold' }}>Vital Signs</TableCell>
                 <TableCell style={{ backgroundColor: '#e0f7fa', fontWeight: 'bold' }}>Action</TableCell>
               </TableRow>
@@ -133,7 +133,7 @@ const OurPatients: React.FC = () => {
                   <TableCell>{patient.patientId}</TableCell>
                   <TableCell>{patient.patientName}</TableCell>
                   <TableCell>{new Date(patient.visitDate).toLocaleDateString()}</TableCell>
-                  <TableCell>{patient.treatment}</TableCell>
+                  {/* <TableCell>{patient.treatment}</TableCell> */}
                   <TableCell>{patient.vitalSigns}</TableCell>
                   <TableCell>
                     <IconButton onClick={(event) => handleMenuClick(event, patient.patientId)}>

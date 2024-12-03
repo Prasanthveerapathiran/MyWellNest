@@ -56,7 +56,7 @@ const ImageHolder = styled('div')({
   padding: '10px 0',
 });
 
-const instructions = ['Take twice daily before eating', 'Take twice daily after eating'];
+const instructions = ['Take morning and night after food','Take only morning after food','Take only morning before food','Take morning, and after and night after food'];
 
 const paymentStatuses = ['paid', 'unpaid'];
 
@@ -88,7 +88,32 @@ const Record: React.FC = () => {
   const [pdfBlobUrl, setPdfBlobUrl] = useState<string | null>(null);
   const [openPdfPreview, setOpenPdfPreview] = useState(false);
   const navigate = useNavigate();
+  const [patientId, setPatientId] = useState<number | null>(null);
+  const [doctorId, setDoctorId] = useState<number | null>(null);
+  const [medicalHistory, setMedicalHistory] = useState<string>('');
+  useEffect(() => {
+    if (patientId && patients.length > 0) {
+      const patient = patients.find((p) => p.id === patientId);
+      if (patient) {
+        setSelectedPatient(patient);
+        setSearchTerm(patient.name); // Prepopulate the form with patient name
+      }
+    }
+  }, [patientId, patients]);
+  
 
+  useEffect(() => {
+    // Retrieve data from localStorage
+    const patientId = localStorage.getItem('patientId');
+    const doctorId = localStorage.getItem('doctorId');
+    const medicalHistory = localStorage.getItem('medicalHistory');
+
+    if (patientId && doctorId && medicalHistory) {
+      setPatientId(Number(patientId));
+      setDoctorId(Number(doctorId));
+      setMedicalHistory(medicalHistory);
+    }
+  }, []);
   const handleSearch = (event: React.ChangeEvent<HTMLInputElement>) => {
     const term = event.target.value.toLowerCase();
     setSearchTerm(term);
@@ -149,12 +174,12 @@ const Record: React.FC = () => {
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-
+  
     if (!selectedPatient) {
       setAlert({ type: 'error', message: 'Please select a patient.' });
       return;
     }
-
+  
     const formData = {
       doctorId: doctor.id,
       patientId: selectedPatient.id,
@@ -171,58 +196,91 @@ const Record: React.FC = () => {
         quantity: parseInt(med.quantity),
       })),
     };
-
+  
     try {
+      // Step 1: Post the medical record
       const response = await axios.post('http://localhost:8080/api/v1/medical-records', formData, {
         headers: {
           Authorization: `Bearer ${accessToken}`,
         },
       });
-
+  
       if (response.status === 201) {
         setAlert({ type: 'success', message: 'Medical record added successfully!' });
-
-        // Generate PDF with border and headline (WellNest)
-        const doc = new jsPDF();
-        const pageWidth = doc.internal.pageSize.getWidth();
-        const pageHeight = doc.internal.pageSize.getHeight();
-
-        // Add page border
-        doc.setLineWidth(1);
-        doc.rect(10, 10, pageWidth - 20, pageHeight - 20);
-
-        // Add hospital name "WellNest"
-        doc.setFontSize(22);
-        doc.text('WellNest Hospital', pageWidth / 2, 30, { align: 'center' });
-
-        // Add prescription details
-        doc.setFontSize(12);
-        doc.text(`Doctor: ${doctor.firstName} ${doctor.lastName}`, 20, 50);
-        doc.text(`Patient: ${selectedPatient.name}`, 20, 60);
-        doc.text(`Visit Date: ${new Date(visitDate).toLocaleDateString()}`, 20, 70);
-        doc.text(`Complaints: ${complains}`, 20, 80);
-        doc.text(`Diagnosis: ${diagnosis}`, 20, 90);
-        doc.text(`Vital Signs: ${vitalSignStatus}`, 20, 100);
-        doc.text(`Payment Status: ${paymentStatus}`, 20, 110);
-
-        // Medications
-        doc.text('Medications:', 20, 120);
-        medications.forEach((med, index) => {
-          doc.text(
-            `${index + 1}. ${med.medicationName} - Dosage: ${med.dosage}mg - Quantity: ${med.quantity}`,
-            20,
-            130 + index * 10
-          );
-        });
-
-        // Create PDF blob and open it in preview modal
-        const pdfBlob = doc.output('blob');
-        const pdfBlobUrl = URL.createObjectURL(pdfBlob);
-        setPdfBlobUrl(pdfBlobUrl);
-        setOpenPdfPreview(true);
+  
+        // Step 2: Retrieve the appointmentId from localStorage and complete the appointment
+        const appointmentId = localStorage.getItem('appointmentId');
+        if (appointmentId) {
+          try {
+            const completeResponse = await axios.put(
+              `http://localhost:8080/api/v1/appointments/${appointmentId}/complete`,
+              {},
+              {
+                headers: {
+                  Authorization: `Bearer ${accessToken}`,
+                },
+              }
+            );
+  
+            // Step 3: After completing the appointment, navigate and generate PDF
+            if (completeResponse.status === 200) {
+              setTimeout(() => {
+                navigate('/dashboard/appointments', { state: { submissionSuccess: true } });
+              }, 500);
+  
+              // Wait 1.5 seconds to display success message
+              const doc = new jsPDF();
+              const pageWidth = doc.internal.pageSize.getWidth();
+              const pageHeight = doc.internal.pageSize.getHeight();
+  
+              // Add page border
+              doc.setLineWidth(1);
+              doc.rect(10, 10, pageWidth - 20, pageHeight - 20);
+  
+              // Add hospital name "WellNest"
+              doc.setFontSize(22);
+              doc.text('WellNest Hospital', pageWidth / 2, 30, { align: 'center' });
+  
+              // Add prescription details
+              doc.setFontSize(12);
+              doc.text(`Doctor: ${doctor.firstName} ${doctor.lastName}`, 20, 50);
+              doc.text(`Patient: ${selectedPatient.name}`, 20, 60);
+              doc.text(`Visit Date: ${new Date(visitDate).toLocaleDateString()}`, 20, 70);
+              doc.text(`Complaints: ${complains}`, 20, 80);
+              doc.text(`Diagnosis: ${diagnosis}`, 20, 90);
+              doc.text(`Vital Signs: ${vitalSignStatus}`, 20, 100);
+              doc.text(`Payment Status: ${paymentStatus}`, 20, 110);
+  
+              // Medications
+              doc.text('Medications:', 20, 120);
+              medications.forEach((med, index) => {
+                doc.text(
+                  `${index + 1}. ${med.medicationName} - Dosage: ${med.dosage}mg - Quantity: ${med.quantity}`,
+                  20,
+                  130 + index * 10
+                );
+              });
+  
+              // Create PDF blob and open it in preview modal
+              const pdfBlob = doc.output('blob');
+              const pdfBlobUrl = URL.createObjectURL(pdfBlob);
+              setPdfBlobUrl(pdfBlobUrl);
+              setOpenPdfPreview(true);
+            }
+          } catch (error) {
+            setAlert({
+              type: 'error',
+              message: 'Failed to complete the appointment. Please try again.',
+            });
+            console.error('Error completing appointment:', error);
+          }
+        }
       }
     } catch (error) {
-      setAlert({ type: 'error', message: 'Failed to add medical record. Please try again.' });
+      setAlert({
+        type: 'error',
+        message: 'Failed to add medical record. Please try again.',
+      });
       console.error('There was an error adding the medical record!', error);
     }
   };
@@ -271,29 +329,45 @@ const Record: React.FC = () => {
                   </Grid>
 
                   <Grid item xs={12}>
-                    <TextField label="Search Patient" variant="outlined" fullWidth value={searchTerm} onChange={handleSearch} helperText="Start typing to search for a patient." />
-                    {filteredPatients.length > 0 && (
-                      <Box sx={{ border: '1px solid #ccc', borderRadius: '4px', marginTop: '8px' }}>
-                        {filteredPatients.map((patient) => (
-                          <Box
-                            key={patient.id}
-                            sx={{
-                              padding: '8px',
-                              cursor: 'pointer',
-                              '&:hover': { backgroundColor: '#f5f5f5' },
-                            }}
-                            onClick={() => handlePatientSelect(patient)}
-                          >
-                            {patient.name} ({patient.patientToken})
-                          </Box>
-                        ))}
-                      </Box>
-                    )}
-                  </Grid>
+  <TextField
+    label="Search Patient"
+    variant="outlined"
+    fullWidth
+    value={searchTerm || (selectedPatient && selectedPatient.name) || ''} // Prefill patient name if available
+    onChange={handleSearch}
+    helperText="Start typing to search for a patient."
+  />
+  {filteredPatients.length > 0 && (
+    <Box sx={{ border: '1px solid #ccc', borderRadius: '4px', marginTop: '8px' }}>
+      {filteredPatients.map((patient) => (
+        <Box
+          key={patient.id}
+          sx={{
+            padding: '8px',
+            cursor: 'pointer',
+            '&:hover': { backgroundColor: '#f5f5f5' },
+          }}
+          onClick={() => handlePatientSelect(patient)}
+        >
+          {patient.name} ({patient.patientToken})
+        </Box>
+      ))}
+    </Box>
+  )}
+</Grid>
 
                   <Grid item xs={12}>
-                    <TextField label="Complains" variant="outlined" fullWidth multiline rows={4} value={complains} onChange={(e) => setComplains(e.target.value)} helperText="Enter patient's complaints." />
-                  </Grid>
+  <TextField
+    label="Medical History"
+    variant="outlined"
+    fullWidth
+    multiline
+    rows={4}
+    value={complains || medicalHistory} // Prefill medical history if available
+    onChange={(e) => setComplains(e.target.value)}
+    helperText="Enter patient's complaints."
+  />
+</Grid>
 
                   <Grid item xs={12}>
                     <TextField label="Diagnosis" variant="outlined" fullWidth multiline rows={3} value={diagnosis} onChange={(e) => setDiagnosis(e.target.value)} helperText="Enter doctor's diagnosis." />
@@ -397,7 +471,7 @@ const Record: React.FC = () => {
                 </Grid>
               </Grid>
             ))}
-             <Typography variant="h6" gutterBottom style={{ marginTop: '20px' }}>
+             {/* <Typography variant="h6" gutterBottom style={{ marginTop: '20px' }}>
               Instructions
             </Typography>
             <form>
@@ -417,7 +491,7 @@ const Record: React.FC = () => {
       />
     </FormGroup>
   </FormControl>
-</form>
+</form> */}
 
             <Box mt={2}>
               <Button variant="contained" color="primary" onClick={addMedication}>

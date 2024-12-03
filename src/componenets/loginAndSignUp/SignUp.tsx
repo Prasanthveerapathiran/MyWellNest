@@ -46,7 +46,7 @@ const SignUp: React.FC = () => {
     lastName: '',
     email: '',
     password: '',
-    role: '',
+    roleName: '',
     clinicName: '',
     clinicId: '',
     branchIds: '',
@@ -65,6 +65,7 @@ const SignUp: React.FC = () => {
   const [emailError, setEmailError] = useState<string | null>(null);
   const [nameError, setNameError] = useState<string | null>(null);
   const [superAdminName, setSuperAdminName] = useState<string>('');
+  const [roles, setRoles] = useState<any[]>([]); // State for roles
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -89,10 +90,25 @@ const SignUp: React.FC = () => {
         console.error('There was an error fetching the super admin data!', error);
       }
     };
+    const fetchRoles = async () => {
+      try {
+        const response = await axios.get('http://localhost:8080/api/v1/admin-role', {
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+          },
+        });
+        setRoles(response.data); // Store roles in state
+      } catch (error) {
+        console.error('There was an error fetching the roles!', error);
+      }
+    };
 
     fetchClinics();
     fetchSuperAdminData();
+    fetchRoles();
   }, [accessToken]);
+
+  
 
   const validateClinicName = (name: string) => {
     const clinicExists = clinics.some(clinic => clinic.name.toLowerCase() === name.toLowerCase());
@@ -102,7 +118,7 @@ const SignUp: React.FC = () => {
       setNameError(null);
     }
   };
-
+   
   const handleChange = (event: ChangeEvent<HTMLInputElement>) => {
     const { name, value } = event.target;
 
@@ -284,21 +300,23 @@ const SignUp: React.FC = () => {
                 />
               </Grid>
               <Grid item xs={12}>
-                <TextField
-                  select
-                  label="Role"
-                  name="role"
-                  variant="outlined"
-                  fullWidth
-                  value={formData.role}
-                  onChange={handleChange}
-                  required
-                >
-                  <MenuItem value="ADMIN">Admin</MenuItem>
-                  <MenuItem value="DOCTOR">Doctor</MenuItem>
-                  <MenuItem value="MANAGER">Manager</MenuItem>
-                </TextField>
-              </Grid>
+  <TextField
+    select
+    label="Role"
+    name="roleName"
+    variant="outlined"
+    fullWidth
+    value={formData.roleName}
+    onChange={handleChange}
+    required
+  >
+    {roles.map((role) => (
+      <MenuItem key={role.id} value={role.roleName}>
+        {role.roleName}
+      </MenuItem>
+    ))}
+  </TextField>
+</Grid>
               <Grid item xs={12} sm={6}>
                 <TextField
                   select
@@ -338,16 +356,73 @@ const SignUp: React.FC = () => {
                   onChange={handleChange}
                 />
               </Grid>
-              <Grid item xs={12}>
-                <TextField
-                  label="Specialization"
-                  name="specialization"
-                  variant="outlined"
-                  fullWidth
-                  value={formData.specialization}
-                  onChange={handleChange}
-                />
-              </Grid>
+             {/* Specialization field based on selected role */}
+{formData.roleName && (
+  <Grid item xs={12}>
+    <TextField
+      select
+      label="Specialization"
+      name="specialization"
+      variant="outlined"
+      fullWidth
+      value={formData.specialization}
+      onChange={handleChange}
+      required
+    >
+      {(() => {
+        switch (formData.roleName) {
+          case 'MANAGER':
+            return [
+              <MenuItem key="adminDuties" value="Administrative Duties">
+                Administrative Duties
+              </MenuItem>,
+              <MenuItem key="financialManagement" value="Financial Management">
+                Financial Management
+              </MenuItem>,
+            ];
+          case 'ADMIN':
+            return [
+              <MenuItem key="financialManagement" value="Financial Management">
+                Financial Management
+              </MenuItem>,
+              <MenuItem key="patientSpecialist" value="Patient Financial Specialist">
+                Patient Financial Specialist
+              </MenuItem>,
+            ];
+          case 'DOCTOR':
+            return [
+              <MenuItem key="anesthesiologists" value="Anesthesiologists">
+                Anesthesiologists
+              </MenuItem>,
+              <MenuItem key="dermatologists" value="Dermatologists">
+                Dermatologists
+              </MenuItem>,
+              <MenuItem key="radiologists" value="Radiologists">
+                Radiologists
+              </MenuItem>,
+              <MenuItem key="pathologists" value="Pathologists">
+                Pathologists
+              </MenuItem>,
+            ];
+          case 'FRONTDESK':
+            return [
+              <MenuItem key="customerInteraction" value="Customer Interaction">
+                Customer Interaction
+              </MenuItem>,
+              <MenuItem
+                key="professionalComposure"
+                value="Maintaining Professional Composure"
+              >
+                Maintaining Professional Composure
+              </MenuItem>,
+            ];
+          default:
+            return [];
+        }
+      })()}
+    </TextField>
+  </Grid>
+)}
               <Grid item xs={6}>
                 <TextField
                   label="Address"
@@ -410,8 +485,8 @@ const SignUp: React.FC = () => {
                   value={formData.address.status}
                   onChange={handleChange}
                 >
-                  <MenuItem value="true">Active</MenuItem>
-                  <MenuItem value="false">Inactive</MenuItem>
+                  <MenuItem value='true'>Active</MenuItem>
+                  <MenuItem value='false'>Inactive</MenuItem>
                 </TextField>
               </Grid>
             </Grid>

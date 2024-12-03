@@ -11,7 +11,7 @@ interface Staff {
   firstName: string;
   lastName: string;
   email: string;
-  role: string;
+  roleName: string;
 }
 
 const ClinicStaffDetails: React.FC = () => {
@@ -46,9 +46,9 @@ const ClinicStaffDetails: React.FC = () => {
 
   const handleAccessPage = () => {
     if (selectedStaff) {
-      if (selectedStaff.role === 'Admin') {
+      if (selectedStaff.roleName === 'Admin') {
         navigate(`/adminPage/${selectedStaff.id}`);
-      } else if (selectedStaff.role === 'Doctor') {
+      } else if (selectedStaff.roleName === 'Doctor') {
         navigate(`/doctorPage/${selectedStaff.id}`);
       } else {
         alert("This role doesn't have access to the special page.");
@@ -98,7 +98,7 @@ const ClinicStaffDetails: React.FC = () => {
                   <TableCell>{staff.firstName}</TableCell>
                   <TableCell>{staff.lastName}</TableCell>
                   <TableCell>{staff.email}</TableCell>
-                  <TableCell>{staff.role}</TableCell>
+                  <TableCell>{staff.roleName}</TableCell>
                 </TableRow>
               ))}
             </TableBody>

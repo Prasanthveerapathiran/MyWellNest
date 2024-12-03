@@ -311,7 +311,7 @@ const PatientForm: React.FC = () => {
               </Grid>
               <Grid container spacing={2}>
               {/* Your existing form fields */}
-              <Grid item xs={12}>
+              {/* <Grid item xs={12}>
   <FormControl component="fieldset">
     <FormLabel component="legend">Is this the patient's first visit?</FormLabel>
     <RadioGroup
@@ -323,7 +323,7 @@ const PatientForm: React.FC = () => {
       <FormControlLabel value="no" control={<Radio />} label="No" />
     </RadioGroup>
   </FormControl>
-</Grid>
+</Grid> */}
 
               <Grid item xs={12} sm={6}>
                 <TextField
@@ -375,20 +375,37 @@ const PatientForm: React.FC = () => {
                   required
                 />
               </Grid>
-              <Grid item xs={12} sm={6}>
-                <input
-                  type="file"
-                  accept="image/*"
-                  onChange={handleImageChange}
-                />
-              </Grid>
-              <Grid item xs={12} sm={6}>
-                <input
-                  type="file"
-                  accept="application/pdf"
-                  onChange={handlePrescriptionChange}
-                />
-              </Grid>
+              <Grid container spacing={2} alignItems="center">
+  <Grid item xs={12} sm={3}>
+    <label htmlFor="photo">Upload Photo:</label>
+  </Grid>
+  <Grid item xs={12} sm={9}>
+    
+    <input
+      type="file"
+      name="photo"
+      id="photo"
+      accept="image/*"
+      onChange={handleImageChange}
+    />
+  </Grid>
+</Grid>
+
+<Grid container spacing={2} alignItems="center">
+  <Grid item xs={12} sm={2}>
+    <label htmlFor="prescription">Upload Prescription:</label>
+  </Grid>
+  <Grid item xs={12} sm={9}>
+    <input
+      type="file"
+      name="prescription"
+      id="prescription"
+      accept="application/pdf"
+      onChange={handlePrescriptionChange}
+    />
+  </Grid>
+</Grid>
+
               <Grid item xs={12}>
                 <Box display="flex" justifyContent="flex-end">
                   <Button type="submit" variant="contained" color="primary">

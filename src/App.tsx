@@ -42,6 +42,12 @@ import ClinicStaffDetails from './componenets/Clinic/ClinicStaffDetails';
 import Portal from './SuperAdmin/Portal';
 import DashboardSuperAdmin from './SuperAdmin/DashboardSuperAdmin';
 import Frontdesk from './componenets/Front_desk/Frontdesk';
+import RoleCreation from './componenets/Clinic/RoleCreation';
+import AllUsers from './componenets/loginAndSignUp/AllUsers';
+import PreAppointment from './componenets/Front_desk/PreAppointment';
+import NewTabContent from './componenets/Appointment/NewTabContent';
+
+
 
 
 
@@ -75,11 +81,14 @@ const App: React.FC = () => {
         <Routes>
           <Route path="/" element={<LoginForm />} />
           <Route path="/signup" element={<SignUp />} />
+          <Route path="/allUsers" element={<AllUsers />} />
           <Route path="/stepper" element={<CustomizedSteppers />} />
           <Route path="/showOneClinic" element={<ShowOneClinic open={true} onClose={handleDialogClose} />} />
           <Route path="/useremail" element={<FetchEmailName />} />
           <Route path="/dashboard/medications" element={<MedicationStackForm />} />
           <Route path="/portal" element={<Portal />} />
+          <Route path="/roleCreation" element={<RoleCreation/>} />
+          
           {/* <Route path="/dashboardSuperAdmin" element={<DashboardSuperAdmin />} /> */}
        
           {/* <Route path="users" element={<ManageUsers />} />
@@ -99,13 +108,17 @@ const App: React.FC = () => {
             <Route path="doctors" element={<Doctors />} />
             <Route path="record" element={<Record />} />
             <Route path="appointments" element={<Appointments />} />
+            <Route path="preAppointment" element={<PreAppointment />} />
             <Route path="create-appointment" element={<CreateAppointment />} />
             <Route path="frontdesk" element={<Frontdesk />} />
+            <Route path="newPatient" element={<NewTabContent />} />
             {/* <Route path="payments" element={<Payments />} /> */}
             <Route path="invoices" element={<Invoices />} />
+            <Route path="doctor-details/:id" element={<DoctorDetails />} />
             <Route path="services" element={<Services />} />
             <Route path="medicines" element={<Medicines />} />
             <Route path="scheduled-appointment" element={<ScheduledAppointment />} />
+            
            
             
             {/* <Route path="clinic" element={<Clinic />} />
@@ -119,7 +132,7 @@ const App: React.FC = () => {
           <Route path="patient-details/:id" element={<PatientDetails />} />
           <Route path="/superadmin" element={<SuperAdmin />} />
           {/* <Route path="/clinic-and-branch" element={<ClinicAndBranch />} /> */}
-          <Route path="/doctor-details/:id" element={<DoctorDetails />} />
+        
           <Route path="/appointments/:id" element={<DoctorAppointment />} />
           <Route path="/updateappointment/:id" element={<UpdateAppointment />} />
           <Route path="/doctor-prescription/:patientId" element={<DoctorPrescription />} />

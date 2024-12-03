@@ -1,7 +1,23 @@
 import React, { useEffect, useState } from 'react';
 import {
-  Container, Typography, Grid, Paper, Table, TableBody, TableCell, TableContainer,
-  TableHead, TableRow, Button, Modal, Box, TextField, Select, MenuItem, InputLabel, FormControl,
+  Container,
+  Typography,
+  Grid,
+  Paper,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+  Button,
+  Modal,
+  Box,
+  TextField,
+  Select,
+  MenuItem,
+  InputLabel,
+  FormControl,
 } from '@mui/material';
 import { styled } from '@mui/system';
 import { useNavigate } from 'react-router-dom';
@@ -24,25 +40,46 @@ interface Doctor {
   lastName: string;
 }
 
-const RootContainer = styled(Container)({
+// Styled components
+const RootContainer = styled(Container)(({ theme }) => ({
   maxWidth: '100%',
-  padding: '20px',
+  minHeight: '100vh',
+  padding: theme.spacing(4),
   display: 'flex',
   flexDirection: 'column',
   alignItems: 'center',
-  justifyContent: 'center',
-  backgroundColor: '#f4f6f8',
+  background: 'linear-gradient(135deg, #f5f7fa, #c3cfe2)',
+}));
+
+const HeroBanner = styled(Box)({
+  width: '100%',
+  padding: '20px 40px',
+  borderRadius: '15px',
+  textAlign: 'center',
+  background: 'linear-gradient(to right, #6a11cb, #2575fc)',
+  color: '#fff',
+  marginBottom: '30px',
+  boxShadow: '0px 10px 30px rgba(0, 0, 0, 0.3)',
 });
 
 const StyledPaper = styled(Paper)(({ theme }) => ({
   padding: theme.spacing(4),
   textAlign: 'center',
-  borderRadius: '12px',
-  boxShadow: '0px 8px 30px rgba(0, 0, 0, 0.15)',
+  borderRadius: '15px',
+  boxShadow: '0px 8px 25px rgba(0, 0, 0, 0.2)',
+  background: '#fff',
   transition: 'transform 0.3s, box-shadow 0.3s',
   '&:hover': {
-    transform: 'translateY(-5px)',
-    boxShadow: '0px 12px 40px rgba(0, 0, 0, 0.2)',
+    transform: 'scale(1.05)',
+    boxShadow: '0px 12px 40px rgba(0, 0, 0, 0.3)',
+  },
+}));
+
+const TableHeader = styled(TableHead)(({ theme }) => ({
+  backgroundColor: theme.palette.primary.main,
+  '& th': {
+    color: '#fff',
+    fontWeight: 'bold',
   },
 }));
 
@@ -51,11 +88,11 @@ const ModalBox = styled(Box)({
   top: '50%',
   left: '50%',
   transform: 'translate(-50%, -50%)',
-  width: 400,
+  width: '450px',
   backgroundColor: '#fff',
-  borderRadius: 8,
-  boxShadow: 24,
-  padding: 4,
+  borderRadius: '10px',
+  boxShadow: '0px 10px 30px rgba(0, 0, 0, 0.3)',
+  padding: '25px',
 });
 
 const Frontdesk: React.FC = () => {
@@ -157,14 +194,19 @@ const Frontdesk: React.FC = () => {
 
   return (
     <RootContainer>
-      <Typography variant="h4" gutterBottom color="primary">
-        Welcome to the Front Desk
-      </Typography>
+      <HeroBanner>
+        <Typography variant="h4" gutterBottom>
+          Welcome to the Front Desk
+        </Typography>
+        <Typography variant="subtitle1">
+          Manage today's and future appointments with ease.
+        </Typography>
+      </HeroBanner>
 
-      <Grid container spacing={4} justifyContent="center">
-        <Grid item xs={12} md={4}>
+      <Grid container spacing={4}>
+        <Grid item xs={12} md={6}>
           <StyledPaper>
-            <Typography variant="h6" gutterBottom>
+            <Typography variant="h5" gutterBottom>
               Book an Appointment
             </Typography>
             <Button
@@ -178,9 +220,9 @@ const Frontdesk: React.FC = () => {
           </StyledPaper>
         </Grid>
 
-        <Grid item xs={12} md={4}>
+        <Grid item xs={12} md={6}>
           <StyledPaper>
-            <Typography variant="h6" gutterBottom>
+            <Typography variant="h5" gutterBottom>
               New Patient? Add Here
             </Typography>
             <Button
@@ -189,30 +231,40 @@ const Frontdesk: React.FC = () => {
               onClick={() => handleNavigation('/patient-form')}
               sx={{ marginTop: 2 }}
             >
-              Go to Patients
+              Add Patient
             </Button>
           </StyledPaper>
         </Grid>
       </Grid>
 
-      <Grid container spacing={4} justifyContent="center" sx={{ marginTop: 4 }}>
-        <Grid item xs={12} md={5}>
+      <Grid container spacing={4} sx={{ marginTop: 4 }}>
+        <Grid item xs={12} md={6}>
           <StyledPaper>
             <Typography variant="h6" color="textSecondary" gutterBottom>
               Today's Appointments
             </Typography>
-            <TableContainer component={Paper} sx={{ marginTop: 2, boxShadow: 'none' }}>
+            <TableContainer>
               <Table>
-                <TableHead>
+                <TableHeader>
                   <TableRow>
                     <TableCell>Name</TableCell>
                     <TableCell>Doctor</TableCell>
                     <TableCell>Phone</TableCell>
                   </TableRow>
-                </TableHead>
+                </TableHeader>
                 <TableBody>
                   {todayAppointments.map((appointment) => (
-                    <TableRow key={appointment.id} onClick={() => handleRowClick(appointment)} hover>
+                    <TableRow
+                      key={appointment.id}
+                      onClick={() => handleRowClick(appointment)}
+                      hover
+                      sx={{
+                        '&:hover': {
+                          backgroundColor: '#f1f1f1',
+                          cursor: 'pointer',
+                        },
+                      }}
+                    >
                       <TableCell>{appointment.name}</TableCell>
                       <TableCell>{getDoctorNameById(appointment.doctorId)}</TableCell>
                       <TableCell>{appointment.phoneNumber}</TableCell>
@@ -224,23 +276,33 @@ const Frontdesk: React.FC = () => {
           </StyledPaper>
         </Grid>
 
-        <Grid item xs={12} md={5}>
+        <Grid item xs={12} md={6}>
           <StyledPaper>
             <Typography variant="h6" color="textSecondary" gutterBottom>
               Future Appointments
             </Typography>
-            <TableContainer component={Paper} sx={{ marginTop: 2, boxShadow: 'none' }}>
+            <TableContainer>
               <Table>
-                <TableHead>
+                <TableHeader>
                   <TableRow>
                     <TableCell>Name</TableCell>
                     <TableCell>Doctor</TableCell>
                     <TableCell>Phone</TableCell>
                   </TableRow>
-                </TableHead>
+                </TableHeader>
                 <TableBody>
                   {futureAppointments.map((appointment) => (
-                    <TableRow key={appointment.id} onClick={() => handleRowClick(appointment)} hover>
+                    <TableRow
+                      key={appointment.id}
+                      onClick={() => handleRowClick(appointment)}
+                      hover
+                      sx={{
+                        '&:hover': {
+                          backgroundColor: '#f1f1f1',
+                          cursor: 'pointer',
+                        },
+                      }}
+                    >
                       <TableCell>{appointment.name}</TableCell>
                       <TableCell>{getDoctorNameById(appointment.doctorId)}</TableCell>
                       <TableCell>{appointment.phoneNumber}</TableCell>
@@ -253,21 +315,21 @@ const Frontdesk: React.FC = () => {
         </Grid>
       </Grid>
 
+      {/* Modal */}
       <Modal open={modalOpen} onClose={handleModalClose}>
         <ModalBox>
-          <Typography variant="h6" gutterBottom>Update Appointment</Typography>
+          <Typography variant="h6" gutterBottom>
+            Update Appointment
+          </Typography>
           <TextField
+            fullWidth
             label="Appointment Date"
             type="datetime-local"
-            fullWidth
             value={newAppointmentDate}
             onChange={(e) => setNewAppointmentDate(e.target.value)}
             sx={{ marginBottom: 2 }}
-            InputLabelProps={{
-              shrink: true,
-            }}
           />
-          <FormControl fullWidth sx={{ marginBottom: 2 }}>
+          <FormControl fullWidth>
             <InputLabel>Doctor</InputLabel>
             <Select
               value={selectedDoctorId || ''}
@@ -280,8 +342,13 @@ const Frontdesk: React.FC = () => {
               ))}
             </Select>
           </FormControl>
-          <Button variant="contained" color="primary" onClick={handleAppointmentUpdate}>
-            Update
+          <Button
+            variant="contained"
+            color="primary"
+            onClick={handleAppointmentUpdate}
+            sx={{ marginTop: 2 }}
+          >
+            Save Changes
           </Button>
         </ModalBox>
       </Modal>

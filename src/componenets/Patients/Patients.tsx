@@ -551,32 +551,47 @@ const AnimatedPaper = motion(Paper);
     </Box>
     <motion.div
   initial={{ opacity: 0, y: 50 }}
-  animate={{ opacity: 1, y: 2 }}
+  animate={{ opacity: 1, y: 0 }}
   transition={{ duration: 1.5 }}
 >
   <TableContainer
     component={Paper}
     sx={{
       mt: 4,
-      maxHeight: '350px',
-      borderRadius: 2,
-      boxShadow: '0 4px 10px rgba(0, 0, 0, 0.1)',
+      maxHeight: '400px',
+      borderRadius: 3,
+      boxShadow: '0px 6px 15px rgba(0, 0, 0, 0.2)',
+      overflow: 'hidden',
     }}
   >
     <Table stickyHeader>
       <TableHead>
         <TableRow>
-          {['ID', 'Name', 'Age', 'Medical History', 'Blood Group', 'Phone Number', 'Appointment Date', 'Patient Token', ].map((header) => (
+          {[
+            'ID',
+            'Name',
+            'Age',
+            'Medical History',
+            'Blood Group',
+            'Phone Number',
+            'New Appointment',
+            'Patient Token',
+          ].map((header) => (
             <TableCell
               key={header}
               sx={{
-                backgroundColor: '#00796b',
-                color: '#fff',
+                backgroundColor: '#004d40', // Solid dark teal color for visibility
+                color: '#ffffff', // White text for high contrast
                 fontWeight: 'bold',
                 textAlign: 'center',
-                borderTopLeftRadius: header === 'ID' ? '10px' : '',
-                borderTopRightRadius: header === 'Actions' ? '10px' : '',
+                textTransform: 'uppercase',
+                fontSize: '14px',
+                letterSpacing: '0.05em',
+                padding: '12px',
+                '&:first-of-type': { borderTopLeftRadius: '15px' },
+                '&:last-of-type': { borderTopRightRadius: '15px' },
               }}
+              
             >
               {header}
             </TableCell>
@@ -584,50 +599,63 @@ const AnimatedPaper = motion(Paper);
         </TableRow>
       </TableHead>
       <TableBody>
-  {filteredPatients.map((patient) => (
-    <TableRow
-      key={patient.id}
-      sx={{
-        '&:nth-of-type(odd)': { backgroundColor: '#f7f7f7' },
-        '&:hover': { backgroundColor: '#e0f2f1', cursor: 'pointer' },
-      }}
-      component={Link} // Make the TableRow a Link
-      to={`/patient-details/${patient.id}`} // Adjust the path to your patient details route
-    >
-      <TableCell align="center">{patient.id}</TableCell>
-      <TableCell>
-        <Box sx={{ display: 'flex', alignItems: 'center' }}>
-          {/* Uncomment this line to show the avatar */}
-          {/* <Avatar
-            alt={patient.name}
-            src={`data:image/jpeg;base64,${patient.imageUrl}`}
-            sx={{ width: 40, height: 40, ml: 2, marginRight: 2 }}
-          /> */}
-          <Typography variant="body1">{patient.name}</Typography>
-        </Box>
-      </TableCell>
-      <TableCell align="center">{patient.age}</TableCell>
-      <TableCell>{patient.medicalHistory}</TableCell>
-      <TableCell align="center">{patient.bloodGroup}</TableCell>
-      <TableCell align="center">{patient.phoneNumber}</TableCell>
-      <TableCell>{format(new Date(patient.appointmentDate), 'yyyy-MM-dd')}</TableCell>
-
-      <TableCell align="center">{patient.patientToken}</TableCell>
-      {/* <TableCell align="center">
-        <LongMenu
-          handleViewDetails={() => handleViewDetails(patient.id)} // No event parameter here
-          handleEdit={() => handleEdit(patient)} // No event parameter here
-          handleDelete={() => handleDelete(patient.id)} // No event parameter here
-        />
-      </TableCell> */}
-    </TableRow>
-  ))}
-</TableBody>
-
-
+        {filteredPatients.map((patient) => (
+          <TableRow
+            key={patient.id}
+            sx={{
+              '&:nth-of-type(odd)': { backgroundColor: '#f5f5f5' },
+              '&:nth-of-type(even)': { backgroundColor: '#e8f5e9' },
+              '&:hover': {
+                backgroundColor: '#d0f0e1',
+                transform: 'scale(1.01)',
+                boxShadow: '0px 4px 10px rgba(0, 0, 0, 0.1)',
+                transition: 'all 0.3s ease-in-out',
+              },
+            }}
+            component={Link} // Converts TableRow into a clickable link
+            to={`/patient-details/${patient.id}`}
+            style={{ textDecoration: 'none' }} // Prevents underline in links
+          >
+            <TableCell align="center" sx={{ fontWeight: 'medium', fontSize: '13px' }}>
+              {patient.id}
+            </TableCell>
+            <TableCell>
+              <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                <Typography
+                  variant="body2"
+                  sx={{
+                    fontWeight: 'bold',
+                    color: '#00796b',
+                    '&:hover': { textDecoration: 'underline' },
+                  }}
+                >
+                  {patient.name}
+                </Typography>
+              </Box>
+            </TableCell>
+            <TableCell align="center" sx={{ fontSize: '13px' }}>
+              {patient.age}
+            </TableCell>
+            <TableCell align="center" sx={{ fontSize: '13px' }}>{patient.medicalHistory}</TableCell>
+            <TableCell align="center" sx={{ fontSize: '13px' }}>
+              {patient.bloodGroup}
+            </TableCell>
+            <TableCell align="center" sx={{ fontSize: '13px' }}>
+              {patient.phoneNumber}
+            </TableCell>
+            <TableCell align="center" sx={{ fontSize: '13px'  }}>
+              {format(new Date(patient.appointmentDate), 'yyyy-MM-dd')}
+            </TableCell>
+            <TableCell align="center" sx={{ fontSize: '13px' }}>
+              {patient.patientToken}
+            </TableCell>
+          </TableRow>
+        ))}
+      </TableBody>
     </Table>
   </TableContainer>
 </motion.div>
+
 
     
       <Dialog open={openUpdateDialog} onClose={() => setOpenUpdateDialog(false)}>
